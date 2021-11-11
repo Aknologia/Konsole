@@ -32,10 +32,10 @@ public class WorldCommand implements Command {
         int days = MathHelper.floor(sec / 86400);
         int hours = MathHelper.floor((sec - days * 86400) / 3600);
         int minutes = MathHelper.floor((sec - days * 86400 - hours * 3600) / 60);
-        String result = "N/A";
+        String result = null;
         if(days < 1 && hours < 1) result = String.format("%sm", minutes);
         else if(days < 1) result = String.format("%sh%sm", hours, minutes);
-        else String.format("%sd%sh%sm", days, hours, minutes);
+        else result = String.format("%sd%sh%sm", days, hours, minutes);
         return result;
     }
 

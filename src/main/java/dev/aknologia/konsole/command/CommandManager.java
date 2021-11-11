@@ -20,6 +20,7 @@ public class CommandManager {
         new QuitCommand().register(this.dispatcher);
         new BindCommand().register(this.dispatcher);
         new WorldCommand().register(this.dispatcher);
+        new DimensionCommand().register(this.dispatcher);
 
         this.dispatcher.setConsumer(((context, success, result) -> {
             KonsoleClient.LOG.info("[DISPATCHER] %s [%s > %s] => %s", context.getInput(), context.getCommand().getName(), result, success ? "SUCCESS" : "FAIL");
