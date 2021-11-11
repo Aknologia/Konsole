@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "id": "konsole",
+  "version": "${version}",
+  "name": "Konsole",
+  "description": "Clientside mod for debugging made with FabricMC.",
+  "authors": [
+    "Aknologia"
+  ],
+  "contact": {
+    "website": "https://aknologia.github.io/Konsole",
+    "repo": "https://github.com/Aknologia/Konsole"
+  },
+  "license": "MIT",
+  "icon": "assets/konsole/icon.png",
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "dev.aknologia.konsole.KonsoleClient"
+    ]
+  },
+  "mixins": [
+    "konsole.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.11.7",
+    "fabric": "*",
+    "minecraft": "1.17.1"
+  }
+}

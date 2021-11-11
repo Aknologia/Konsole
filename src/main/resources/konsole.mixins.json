@@ -1,0 +1,12 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "dev.aknologia.konsole.mixin",
+  "compatibilityLevel": "JAVA_16",
+  "client": [
+      "ChatHudListenerMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
