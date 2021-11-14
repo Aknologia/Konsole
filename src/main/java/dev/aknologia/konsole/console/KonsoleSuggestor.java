@@ -154,8 +154,8 @@ public class KonsoleSuggestor {
             }
         }
         int n = j = stringReader.getCursor();
-        if(!(i < j || this.window != null && this.completingSuggestions) && this.parse != null) {
-            this.suggestions = commandDispatcher.getCompletionSuggestions(this.parse, i);
+        if(!(i < j || this.window != null && this.completingSuggestions)) {
+            this.suggestions = commandDispatcher.getCompletionSuggestions(this.parse, this.textField.getText(), i);
             this.show();
         }
     }
@@ -180,7 +180,7 @@ public class KonsoleSuggestor {
     }
 
     private void show() {
-        if(this.textField.getCursor() == this.textField.getText().length()) {
+        if(this.parse != null && this.textField.getCursor() == this.textField.getText().length()) {
             if(this.suggestions.isEmpty() && !this.parse.getExceptions().isEmpty()) {
                 int i = 0;
                 for(Map.Entry<Integer, CommandSyntaxException> entry : this.parse.getExceptions().entrySet()) {
@@ -210,6 +210,7 @@ public class KonsoleSuggestor {
     }
 
     private void showUsages(Formatting formatting) {
+        if(this.parse == null) return;
         CommandContextBuilder commandContextBuilder = this.parse.getContext();
         SuggestionContext suggestionContext = commandContextBuilder.findSuggestionContext(this.textField.getText(), this.textField.getCursor());
         int startPos = suggestionContext != null ? suggestionContext.startPos : 0;

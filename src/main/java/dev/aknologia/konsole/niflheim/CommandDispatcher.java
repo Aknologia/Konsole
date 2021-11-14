@@ -22,8 +22,8 @@ public class CommandDispatcher {
 
     private static final String USAGE_OPTIONAL_OPEN = "[";
     private static final String USAGE_OPTIONAL_CLOSE = "]";
-    private static final String USAGE_REQUIRED_OPEN = "(";
-    private static final String USAGE_REQUIRED_CLOSE = ")";
+    private static final String USAGE_REQUIRED_OPEN = "<";
+    private static final String USAGE_REQUIRED_CLOSE = ">";
     private static final String USAGE_OR = "|";
 
     private HashMap<String, Command> commands = new HashMap<>();
@@ -134,38 +134,26 @@ public class CommandDispatcher {
             if(arg.isRequired()) usage += USAGE_REQUIRED_OPEN;
             else usage += USAGE_OPTIONAL_OPEN;
             usage += arg.getName();
-            if(arg.isRequired()) usage += USAGE_REQUIRED_OPEN;
-            else usage += USAGE_OPTIONAL_OPEN;
+            if(arg.isRequired()) usage += USAGE_REQUIRED_CLOSE;
+            else usage += USAGE_OPTIONAL_CLOSE;
         }
         return usage;
     }
 
-    public Suggestions getCompletionSuggestions(final ParseResults parse) {
-        return getCompletionSuggestions(parse, parse.getReader().getTotalLength());
+    public Suggestions getCompletionSuggestions(final ParseResults parse, final String fullInput) {
+        return getCompletionSuggestions(parse, fullInput, parse.getReader().getTotalLength());
     }
 
-    public Suggestions getCompletionSuggestions(final @NotNull ParseResults parse, int cursor) {
-        final CommandContextBuilder context = parse.getContext();
-
-        final String fullInput = parse.getReader().getString();
+    public Suggestions getCompletionSuggestions(final ParseResults parse, final String fullInput, int cursor) {
         final String truncatedInput = fullInput.substring(0, cursor);
         final String truncatedInputLowerCase = truncatedInput.toLowerCase(Locale.ROOT);
+        if(parse == null) return this.getCommandCompletionSuggestions(fullInput, cursor);
+
+        final CommandContextBuilder context = parse.getContext();
 
         final SuggestionContext suggestionContext = context.findSuggestionContext(fullInput, cursor);
         if(suggestionContext == null) {
-            StringRange range = new StringRange(0, cursor);
-            List<Suggestion> suggestions = new ArrayList<>();
-            Set<String> commands = KonsoleClient.COMMAND_MANAGER.getDispatcher().commands.keySet();
-            List<Suggestion> list2 = new ArrayList<>();
-            Iterator<String> iterator = commands.iterator();
-            while(iterator.hasNext()) {
-                String key = iterator.next();
-                if(key.toLowerCase(Locale.ROOT).startsWith(truncatedInputLowerCase)) {
-                    suggestions.add(new Suggestion(range, key));
-                } else list2.add(new Suggestion(range, key));
-            }
-            suggestions.addAll(list2);
-            return new Suggestions(range, suggestions);
+            return this.getCommandCompletionSuggestions(truncatedInputLowerCase, cursor);
         }
         final Command command = suggestionContext.command;
         final int start = Math.min(suggestionContext.startPos, cursor);
@@ -179,6 +167,22 @@ public class CommandDispatcher {
         List<String> rawSuggestions = suggestionContext.argument.getArgumentType().getSuggestions();
         Iterator<String> iterator = rawSuggestions.iterator();
         StringRange range = new StringRange(suggestionContext.startPos, cursor);
+        while(iterator.hasNext()) {
+            String key = iterator.next();
+            if(key.toLowerCase(Locale.ROOT).startsWith(truncatedInputLowerCase)) {
+                suggestions.add(new Suggestion(range, key));
+            } else list2.add(new Suggestion(range, key));
+        }
+        suggestions.addAll(list2);
+        return new Suggestions(range, suggestions);
+    }
+
+    public Suggestions getCommandCompletionSuggestions(String truncatedInputLowerCase, int cursor) {
+        StringRange range = new StringRange(0, cursor);
+        List<Suggestion> suggestions = new ArrayList<>();
+        Set<String> commands = KonsoleClient.COMMAND_MANAGER.getDispatcher().commands.keySet();
+        List<Suggestion> list2 = new ArrayList<>();
+        Iterator<String> iterator = commands.iterator();
         while(iterator.hasNext()) {
             String key = iterator.next();
             if(key.toLowerCase(Locale.ROOT).startsWith(truncatedInputLowerCase)) {
