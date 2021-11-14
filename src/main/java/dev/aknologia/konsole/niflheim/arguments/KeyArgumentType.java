@@ -12,9 +12,11 @@ import org.lwjgl.glfw.GLFW;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
+import java.util.Set;
 
 public class KeyArgumentType implements ArgumentType<Keys.Key> {
-    private static final Collection<String> EXAMPLES = Arrays.asList("K", "MOUSE1", "MWHEELDOWN");
+    private static final Collection<String> EXAMPLES = Arrays.asList("K", "MOUSE1", "SHIFT");
     public static final SimpleCommandExceptionType KEY_NOT_FOUND_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("konsole.argument.key.notfound"));
 
     private KeyArgumentType() {
@@ -40,4 +42,11 @@ public class KeyArgumentType implements ArgumentType<Keys.Key> {
 
     @Override
     public Collection<String> getExamples() { return EXAMPLES; }
+
+    @Override
+    public List<String> getSuggestions() {
+        Set<String> keys = KeyManager.KEYS.getKeyList().keySet();
+        keys.addAll(KeyManager.KEYS.getMouseList().keySet());
+        return keys.stream().toList();
+    }
 }

@@ -30,6 +30,7 @@ public class KonsoleScreen extends Screen {
     protected TextFieldWidget konsoleField;
     private final String originalKonsoleText;
     private final SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
+    KonsoleSuggestor konsoleSuggestor;
 
     public KonsoleScreen(String string) {
         super(new TranslatableText("konsole.title"));
@@ -49,7 +50,10 @@ public class KonsoleScreen extends Screen {
         this.konsoleField.setMaxLength(256);
         this.konsoleField.setDrawsBackground(false);
         this.konsoleField.setText(this.originalKonsoleText);
+        this.konsoleField.setChangedListener(this::onKonsoleFieldUpdate);
         this.addSelectableChild(this.konsoleField);
+        this.konsoleSuggestor = new KonsoleSuggestor(this.client, this, this.konsoleField, this.textRenderer, 1, 10, true, -805306368);
+        this.konsoleSuggestor.refresh();
         this.setInitialFocus(this.konsoleField);
     }
 
@@ -58,6 +62,7 @@ public class KonsoleScreen extends Screen {
         String string = this.konsoleField.getText();
         this.init(client, width, height);
         this.setText(string);
+        this.konsoleSuggestor.refresh();
     }
 
     @Override
@@ -69,8 +74,15 @@ public class KonsoleScreen extends Screen {
     @Override
     public void tick() { this.konsoleField.tick(); }
 
+    private void onKonsoleFieldUpdate(String konsoleText) {
+        String string = this.konsoleField.getText();
+        this.konsoleSuggestor.setWindowActive(!string.equals(this.originalKonsoleText));
+        this.konsoleSuggestor.refresh();
+    }
+
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        if(this.konsoleSuggestor.keyPressed(keyCode, scanCode, modifiers)) return true;
         if(super.keyPressed(keyCode, scanCode, modifiers)) { return true; }
         if(keyCode == GLFW.GLFW_KEY_ESCAPE) {
             this.client.setScreen(null);
@@ -93,11 +105,11 @@ public class KonsoleScreen extends Screen {
             return true;
         }
         if(keyCode == GLFW.GLFW_KEY_PAGE_UP) {
-            KonsoleClient.KONSOLE.scroll(KonsoleClient.KONSOLE.getVisibleLineCount() - 1);
+            this.scroll(KonsoleClient.KONSOLE.getVisibleLineCount() - 1);
             return true;
         }
         if(keyCode == GLFW.GLFW_KEY_PAGE_DOWN) {
-            KonsoleClient.KONSOLE.scroll(-KonsoleClient.KONSOLE.getVisibleLineCount() + 1);
+            this.scroll(-KonsoleClient.KONSOLE.getVisibleLineCount() + 1);
             return true;
         }
         return false;
@@ -111,13 +123,15 @@ public class KonsoleScreen extends Screen {
         if(amount < -1.0) {
             amount = -1.0;
         }
+        if(this.konsoleSuggestor.mouseScrolled(amount)) return true;
         if(!KonsoleScreen.hasShiftDown()) { amount *= 7.0; }
-        KonsoleClient.KONSOLE.scroll(amount);
+        this.scroll(amount);
         return true;
     }
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        if(this.konsoleSuggestor.mouseClicked(mouseX, mouseX, button)) return true;
         if(this.konsoleField.mouseClicked(mouseX, mouseY, button)) {
             return true;
         }
@@ -148,6 +162,7 @@ public class KonsoleScreen extends Screen {
             this.konsoleLastMessage = this.konsoleField.getText();
         }
         this.konsoleField.setText(KonsoleClient.KONSOLE.getMessageHistory().get(i));
+        this.konsoleSuggestor.setWindowActive(false);
         this.messageHistorySize = i;
     }
 
@@ -201,7 +216,21 @@ public class KonsoleScreen extends Screen {
                     0xFFFFFF
             );
         }
+        this.konsoleSuggestor.render(matrices, mouseX, mouseY);
         super.render(matrices, mouseX, mouseY, delta);
+    }
+
+    public void scroll(double amount) {
+        KonsoleClient.KONSOLE.scrolledLines = (int)((double)KonsoleClient.KONSOLE.scrolledLines + amount);
+        int fullLines = this.getAllLines().size();
+        int visibleLines = KonsoleClient.KONSOLE.getVisibleLineCount();
+        if (KonsoleClient.KONSOLE.scrolledLines > fullLines - visibleLines) {
+            KonsoleClient.KONSOLE.scrolledLines = fullLines - visibleLines;
+        }
+        if (KonsoleClient.KONSOLE.scrolledLines <= 0) {
+            KonsoleClient.KONSOLE.scrolledLines = 0;
+            KonsoleClient.KONSOLE.hasUnreadNewMessages = false;
+        }
     }
 
     public int originX() { return 2; }
@@ -222,13 +251,17 @@ public class KonsoleScreen extends Screen {
         return MathHelper.floor(this.getBoxWidth() - this.getTimestampWidth() - this.originX()*2);
     }
 
-    public List<KonsoleLine<Text>> getVisibleLines() {
-        int maxSize = KonsoleClient.KONSOLE.getVisibleLineCount();
-        List<KonsoleLine<Text>> visibleLines = new ArrayList<>();
-        if(KonsoleClient.KONSOLE.messages.size() < 1) return visibleLines;
+    public List<KonsoleLine<Text>> getAllLines() {
+        List<KonsoleLine<Text>> lines = new ArrayList<>();
+        if(KonsoleClient.KONSOLE.messages.size() < 1) return lines;
         int indexCursor = KonsoleClient.KONSOLE.scrolledLines;
-        while(visibleLines.size() < maxSize && KonsoleClient.KONSOLE.messages.size() > indexCursor) {
-            KonsoleLine<Text> message = KonsoleClient.KONSOLE.messages.get(indexCursor);
+        while(KonsoleClient.KONSOLE.messages.size() > indexCursor) {
+            KonsoleLine<Text> message;
+            try {
+                message = KonsoleClient.KONSOLE.messages.get(indexCursor);
+            } catch(Exception ex) {
+                break;
+            }
             List<KonsoleLine<Text>> lineList = new ArrayList<>();
             if(message == null) continue;
             Text text = message.getText();
@@ -264,10 +297,18 @@ public class KonsoleScreen extends Screen {
                 }
             }
             Collections.reverse(lineList);
-            visibleLines.addAll(lineList);
+            lines.addAll(lineList);
             indexCursor++;
         }
-        return visibleLines;
+        return lines;
+    }
+
+    public List<KonsoleLine<Text>> getVisibleLines() {
+        int maxSize = KonsoleClient.KONSOLE.getVisibleLineCount();
+        List<KonsoleLine<Text>> lines = this.getAllLines();
+        if(lines.isEmpty()) return lines;
+        if(lines.size() < KonsoleClient.KONSOLE.scrolledLines + maxSize) return lines.subList(lines.size() - maxSize - 1 < 0 ? 0 : lines.size() - maxSize - 1, lines.size());
+        return lines.subList(KonsoleClient.KONSOLE.scrolledLines, KonsoleClient.KONSOLE.scrolledLines + maxSize);
     }
 
     @Override

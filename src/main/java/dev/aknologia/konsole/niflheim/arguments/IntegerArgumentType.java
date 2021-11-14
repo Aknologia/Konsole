@@ -6,9 +6,11 @@ import dev.aknologia.konsole.niflheim.exceptions.CommandSyntaxException;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
 public class IntegerArgumentType implements ArgumentType<Integer> {
     private static final Collection<String> EXAMPLES = Arrays.asList("0", "123", "-123");
+    private static final List<String> SUGGESTIONS = Arrays.asList("0", "5", "80", "900");
 
     private final int minimum;
     private final int maximum;
@@ -86,4 +88,7 @@ public class IntegerArgumentType implements ArgumentType<Integer> {
     public Collection<String> getExamples() {
         return EXAMPLES;
     }
+
+    @Override
+    public List<String> getSuggestions() { return SUGGESTIONS; }
 }

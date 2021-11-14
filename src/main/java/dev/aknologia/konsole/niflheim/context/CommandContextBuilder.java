@@ -3,8 +3,13 @@ package dev.aknologia.konsole.niflheim.context;
 import dev.aknologia.konsole.niflheim.Command;
 import dev.aknologia.konsole.niflheim.CommandDispatcher;
 import dev.aknologia.konsole.niflheim.ParsedArgument;
+import dev.aknologia.konsole.niflheim.StringReader;
+import dev.aknologia.konsole.niflheim.arguments.Argument;
+import dev.aknologia.konsole.niflheim.exceptions.CommandSyntaxException;
+import dev.aknologia.konsole.niflheim.suggestion.SuggestionContext;
 
 import java.util.LinkedHashMap;
+import java.util.ListIterator;
 import java.util.Map;
 
 public class CommandContextBuilder {
@@ -46,4 +51,33 @@ public class CommandContextBuilder {
     public CommandDispatcher getDispatcher() { return dispatcher; }
 
     public StringRange getRange() { return range; }
+
+    public SuggestionContext findSuggestionContext(final String input, final int cursor) {
+        String[] split = input.split(" ");
+        if(split[0].length() >= cursor) return null;
+
+        ListIterator<Argument> listIterator = this.command.getArguments().listIterator();
+
+        Argument suggestedArg = null;
+
+        StringReader reader = new StringReader(input);
+        int lastStart = Integer.MIN_VALUE;
+
+        while (listIterator.hasNext()) {
+            Argument arg = listIterator.next();
+            try {
+                int st = reader.getCursor();
+                Object resultArg = arg.getArgumentType().parse(reader);
+                int end = reader.getCursor();
+                if(st >= cursor) {
+                    suggestedArg = listIterator.previous();
+                    break;
+                }
+                lastStart = st;
+            } catch(final CommandSyntaxException ex) {
+                continue;
+            }
+        }
+        return new SuggestionContext(this.command, suggestedArg, lastStart);
+    }
 }

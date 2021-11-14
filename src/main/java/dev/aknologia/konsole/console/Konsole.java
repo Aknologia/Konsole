@@ -78,18 +78,6 @@ public class Konsole {
         this.hasUnreadNewMessages = false;
     }
 
-    public void scroll(double amount) {
-        this.scrolledLines = (int)((double)this.scrolledLines + amount);
-        int i = this.messages.size();
-        if (this.scrolledLines > i - this.getVisibleLineCount()) {
-            this.scrolledLines = i - this.getVisibleLineCount();
-        }
-        if (this.scrolledLines <= 0) {
-            this.scrolledLines = 0;
-            this.hasUnreadNewMessages = false;
-        }
-    }
-
     private void removeMessage(int messageId) {
         this.messages.removeIf(message -> message.getId() == messageId);
     }

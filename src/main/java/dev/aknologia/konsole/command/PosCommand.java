@@ -12,7 +12,11 @@ import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.fluid.FluidState;
+import net.minecraft.state.property.Property;
 import net.minecraft.text.LiteralText;
+import net.minecraft.util.Formatting;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.Util;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
@@ -24,7 +28,9 @@ import net.minecraft.world.World;
 import net.minecraft.world.border.WorldBorder;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 public class PosCommand implements Command {
     public String name = "pos";
@@ -36,8 +42,20 @@ public class PosCommand implements Command {
         dispatcher.register(this);
     }
 
-    public double round2dec(double number) {
+    private double round2dec(double number) {
         return Math.round(number * 100.0) / 100.0;
+    }
+
+    private String propertyToString(Map.Entry<Property<?>, Comparable<?>> propEntry) {
+        Property<?> property = propEntry.getKey();
+        Comparable<?> comparable = propEntry.getValue();
+        Object string = Util.getValueAsString(property, comparable);
+        if(Boolean.TRUE.equals(comparable)) {
+            string = Formatting.GREEN + (String)string;
+        } else if(Boolean.FALSE.equals(comparable)) {
+            string = Formatting.RED + (String)string;
+        }
+        return property.getName() + ": " + (String)string;
     }
 
     @Override
@@ -70,7 +88,20 @@ public class PosCommand implements Command {
             blockPos = ((BlockHitResult)blockHit).getBlockPos();
             BlockState blockState = world.getBlockState(blockPos);
             lines.add(String.format("\u00A7nTargeted Block:\u00A7r %s, %s, %s", blockPos.getX(), blockPos.getY(), blockPos.getZ()));
-            lines.add(String.format("   \u00A77-\u00A7r %s", String.valueOf(Registry.BLOCK.getId(((AbstractBlock.AbstractBlockState)blockState).getBlock()))));
+            lines.add(String.format("    \u00A77-\u00A7r %s", String.valueOf(Registry.BLOCK.getId(((AbstractBlock.AbstractBlockState)blockState).getBlock()))));
+            if(!blockState.getEntries().isEmpty()) {
+                lines.add("    \u00A77- Properties:\u00A7r");
+                for (Map.Entry entry : blockState.getEntries().entrySet()) {
+                    lines.add(String.format("      \u00A77-\u00A7r %s", this.propertyToString(entry)));
+                }
+            }
+            Collection<Identifier> tags = KonsoleClient.CLIENT.getNetworkHandler().getTagManager().getOrCreateTagGroup(Registry.BLOCK_KEY).getTagsFor(((AbstractBlock.AbstractBlockState)blockState).getBlock());
+            if(!tags.isEmpty()) {
+                lines.add("    \u00A77- Tags:\u00A7r");
+                for(Identifier identifier : tags) {
+                    lines.add(String.format("      \u00A77-\u00A7r #%s", identifier));
+                }
+            }
         }
 
         if(fluitHit.getType() == HitResult.Type.BLOCK) {
@@ -78,6 +109,23 @@ public class PosCommand implements Command {
             FluidState fluidState = world.getFluidState((BlockPos) blockPos);
             lines.add(String.format("\u00A7nTargeted Fluid:\u00A7r %s, %s, %s", blockPos.getX(), blockPos.getY(), blockPos.getZ()));
             lines.add(String.format("   \u00A77-\u00A7r %s", String.valueOf(Registry.FLUID.getId(((FluidState)fluidState).getFluid()))));
+            if(!fluidState.getEntries().isEmpty()) {
+                lines.add("    \u00A77- Properties:\u00A7r");
+                for (Map.Entry entry : fluidState.getEntries().entrySet()) {
+                    lines.add(String.format("       \u00A7r %s", this.propertyToString(entry)));
+                }
+            }
+            Collection<Identifier> tags = KonsoleClient.CLIENT.getNetworkHandler().getTagManager().getOrCreateTagGroup(Registry.FLUID_KEY).getTagsFor(((FluidState)fluidState).getFluid());
+            if(!tags.isEmpty()) {
+                lines.add("    \u00A77- Tags:\u00A7r");
+                for(Identifier identifier : tags) {
+                    lines.add(String.format("       \u00A7r #%s", identifier));
+                }
+            }
+        }
+
+        if(KonsoleClient.CLIENT.targetedEntity != null) {
+            lines.add(String.format("\u00A7nTargeted Entity:\u00A7r %s", String.valueOf(Registry.ENTITY_TYPE.getId(((Entity)KonsoleClient.CLIENT.targetedEntity).getType()))));
         }
 
         KonsoleClient.KONSOLE.addMessage(new LiteralText(String.join("\n", lines)));

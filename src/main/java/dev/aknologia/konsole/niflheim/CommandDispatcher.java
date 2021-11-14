@@ -1,10 +1,17 @@
 package dev.aknologia.konsole.niflheim;
 
+import dev.aknologia.konsole.KonsoleClient;
 import dev.aknologia.konsole.niflheim.arguments.Argument;
 import dev.aknologia.konsole.niflheim.arguments.ArgumentType;
 import dev.aknologia.konsole.niflheim.context.CommandContext;
 import dev.aknologia.konsole.niflheim.context.CommandContextBuilder;
+import dev.aknologia.konsole.niflheim.context.StringRange;
 import dev.aknologia.konsole.niflheim.exceptions.CommandSyntaxException;
+import dev.aknologia.konsole.niflheim.suggestion.Suggestion;
+import dev.aknologia.konsole.niflheim.suggestion.SuggestionContext;
+import dev.aknologia.konsole.niflheim.suggestion.Suggestions;
+import net.minecraft.text.LiteralText;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
@@ -63,6 +70,8 @@ public class CommandDispatcher {
             } catch(final CommandSyntaxException ex) {
                 consumer.onCommandComplete(context, false, 0);
                 throw ex;
+            } catch(IllegalArgumentException ex) {
+                KonsoleClient.COMMAND_MANAGER.sendError(new LiteralText("Missing required argument"));
             }
         } else {
             consumer.onCommandComplete(context, false, 0);
@@ -129,5 +138,54 @@ public class CommandDispatcher {
             else usage += USAGE_OPTIONAL_OPEN;
         }
         return usage;
+    }
+
+    public Suggestions getCompletionSuggestions(final ParseResults parse) {
+        return getCompletionSuggestions(parse, parse.getReader().getTotalLength());
+    }
+
+    public Suggestions getCompletionSuggestions(final @NotNull ParseResults parse, int cursor) {
+        final CommandContextBuilder context = parse.getContext();
+
+        final String fullInput = parse.getReader().getString();
+        final String truncatedInput = fullInput.substring(0, cursor);
+        final String truncatedInputLowerCase = truncatedInput.toLowerCase(Locale.ROOT);
+
+        final SuggestionContext suggestionContext = context.findSuggestionContext(fullInput, cursor);
+        if(suggestionContext == null) {
+            StringRange range = new StringRange(0, cursor);
+            List<Suggestion> suggestions = new ArrayList<>();
+            Set<String> commands = KonsoleClient.COMMAND_MANAGER.getDispatcher().commands.keySet();
+            List<Suggestion> list2 = new ArrayList<>();
+            Iterator<String> iterator = commands.iterator();
+            while(iterator.hasNext()) {
+                String key = iterator.next();
+                if(key.toLowerCase(Locale.ROOT).startsWith(truncatedInputLowerCase)) {
+                    suggestions.add(new Suggestion(range, key));
+                } else list2.add(new Suggestion(range, key));
+            }
+            suggestions.addAll(list2);
+            return new Suggestions(range, suggestions);
+        }
+        final Command command = suggestionContext.command;
+        final int start = Math.min(suggestionContext.startPos, cursor);
+
+        if(suggestionContext.argument == null) {
+            return new Suggestions(new StringRange(suggestionContext.startPos, cursor), Collections.emptyList());
+        }
+        List<Suggestion> suggestions = new ArrayList<>();
+        List<Suggestion> list2 = new ArrayList<>();
+
+        List<String> rawSuggestions = suggestionContext.argument.getArgumentType().getSuggestions();
+        Iterator<String> iterator = rawSuggestions.iterator();
+        StringRange range = new StringRange(suggestionContext.startPos, cursor);
+        while(iterator.hasNext()) {
+            String key = iterator.next();
+            if(key.toLowerCase(Locale.ROOT).startsWith(truncatedInputLowerCase)) {
+                suggestions.add(new Suggestion(range, key));
+            } else list2.add(new Suggestion(range, key));
+        }
+        suggestions.addAll(list2);
+        return new Suggestions(range, suggestions);
     }
 }
