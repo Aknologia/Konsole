@@ -4,7 +4,9 @@
   "package": "dev.aknologia.konsole.mixin",
   "compatibilityLevel": "JAVA_16",
   "client": [
-      "ChatHudListenerMixin"
+    "KeyboardMixin",
+    "MouseMixin",
+    "ChatHudListenerMixin"
   ],
   "injectors": {
     "defaultRequire": 1

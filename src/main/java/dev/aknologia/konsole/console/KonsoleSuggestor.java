@@ -200,11 +200,12 @@ public class KonsoleSuggestor {
         }
         this.x = 0;
         this.width = this.owner.width;
-        if(this.messages.isEmpty()) {
+
+        if(this.messages.isEmpty() && this.suggestions.isEmpty()) {
             this.showUsages(Formatting.GRAY);
         }
         this.window = null;
-        if(this.windowActive && this.client.options.autoSuggestions) {
+        if(!this.suggestions.isEmpty()) {
             this.showSuggestion();
         }
     }
@@ -213,7 +214,7 @@ public class KonsoleSuggestor {
         if(this.parse == null) return;
         CommandContextBuilder commandContextBuilder = this.parse.getContext();
         SuggestionContext suggestionContext = commandContextBuilder.findSuggestionContext(this.textField.getText(), this.textField.getCursor());
-        int startPos = suggestionContext != null ? suggestionContext.startPos : 0;
+        int startPos = suggestionContext != null && suggestionContext.startPos > 0 ? suggestionContext.startPos : 0;
         String usage = KonsoleClient.COMMAND_MANAGER.getDispatcher().getUsage(commandContextBuilder.getCommand());
         Style style = Style.EMPTY.withColor(formatting);
         if(usage != null && usage.trim().length() > 0) {
@@ -304,6 +305,7 @@ public class KonsoleSuggestor {
         }
 
         public void render(MatrixStack matrices, int mouseX, int mouseY) {
+            if(this.suggestions.size() < 1) return;
             Message l;
             int k;
             boolean bl4;

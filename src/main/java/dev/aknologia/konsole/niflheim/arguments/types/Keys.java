@@ -11,6 +11,9 @@ public class Keys {
     private final HashMap<String, Integer> keyList;
     private final HashMap<String, Integer> mouseList;
 
+    public static final int MWHEELUP = -2;
+    public static final int MWHEELDOWN = -3;
+
     public Keys() {
         HashMap<String, Integer> _list = new HashMap<>();
 
@@ -233,6 +236,9 @@ public class Keys {
         _list2.put("mmiddle", GLFW.GLFW_MOUSE_BUTTON_MIDDLE);
         _list2.put("mright", GLFW.GLFW_MOUSE_BUTTON_RIGHT);
 
+        _list2.put("mwheelup", MWHEELUP);
+        _list2.put("mwheeldown", MWHEELDOWN);
+
         this.mouseList = _list2;
         this.keyList = _list;
     }
@@ -246,34 +252,17 @@ public class Keys {
     }
 
     public int getKeyCode(String keyName) {
+        if(keyName == null) return GLFW.GLFW_KEY_UNKNOWN;
         String name = keyName.toLowerCase(Locale.ROOT).trim();
-        if(this.keyList.keySet().contains(name)) return this.keyList.get(name);
-        if(this.mouseList.keySet().contains(name)) return this.mouseList.get(name);
+        if(this.keyList.containsKey(name)) return this.keyList.get(name);
+        if(this.mouseList.containsKey(name)) return this.mouseList.get(name);
         return GLFW.GLFW_KEY_UNKNOWN;
     }
 
     public String getKeyName(int keyCode) {
-        String foundKey = null;
-        Iterator<String> keyIterator = this.keyList.keySet().iterator();
-        while(keyIterator.hasNext()) {
-            String key = keyIterator.next();
-            if(this.keyList.get(key) == keyCode) {
-                foundKey = key;
-                break;
-            }
-        }
-
-        if(foundKey == null) {
-            Iterator<String> mouseIterator = this.keyList.keySet().iterator();
-            while(mouseIterator.hasNext()) {
-                String key = mouseIterator.next();
-                if(this.mouseList.get(key) == keyCode) {
-                    foundKey = key;
-                    break;
-                }
-            }
-        }
-        return foundKey.toUpperCase(Locale.ROOT);
+        if(this.keyList.containsValue(keyCode)) return this.keyList.keySet().stream().filter(entry -> this.keyList.get(entry) == keyCode).toList().get(0).toUpperCase(Locale.ROOT);
+        else if(this.mouseList.containsValue(keyCode)) return this.mouseList.keySet().stream().filter(entry -> this.mouseList.get(entry) == keyCode).toList().get(0).toUpperCase(Locale.ROOT);
+        return null;
     }
 
     public static class Key {

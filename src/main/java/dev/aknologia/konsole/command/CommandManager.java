@@ -13,15 +13,33 @@ import org.jetbrains.annotations.Nullable;
 public class CommandManager {
     private final CommandDispatcher dispatcher = new CommandDispatcher();
     public CommandManager() {
-        new SayCommand().register(this.dispatcher);
+        new HelpCommand().register(this.dispatcher);
+        new SettingsCommand().register(this.dispatcher);
+
         new EchoCommand().register(this.dispatcher);
         new ClearCommand().register(this.dispatcher);
+
         new DisconnectCommand().register(this.dispatcher);
         new QuitCommand().register(this.dispatcher);
+
         new BindCommand().register(this.dispatcher);
+        new UnbindCommand().register(this.dispatcher);
+        new UnbindAllCommand().register(this.dispatcher);
+        new ListBindCommand().register(this.dispatcher);
+
+        new SayCommand().register(this.dispatcher);
+
         new WorldCommand().register(this.dispatcher);
         new DimensionCommand().register(this.dispatcher);
         new PosCommand().register(this.dispatcher);
+
+        new HideHUDCommand().register(this.dispatcher);
+        new RefreshCommand().register(this.dispatcher);
+        new HitboxCommand().register(this.dispatcher);
+        new ChunkBorderCommand().register(this.dispatcher);
+        new AdvancedTooltipsCommand().register(this.dispatcher);
+
+        new ActionCommands().register(this.dispatcher);
 
         this.dispatcher.setConsumer(((context, success, result) -> {
             KonsoleClient.LOG.info("[DISPATCHER] %s [%s > %s] => %s", context.getInput(), context.getCommand().getName(), result, success ? "SUCCESS" : "FAIL");
@@ -33,7 +51,6 @@ public class CommandManager {
     }
 
     public int execute(String command) {
-        KonsoleClient.KONSOLE.addMessage(new LiteralText("> ").append(command).formatted(Formatting.GRAY));
         try {
             int n = this.dispatcher.execute(command);
             return n;

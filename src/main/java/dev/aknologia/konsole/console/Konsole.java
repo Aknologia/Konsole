@@ -23,6 +23,7 @@ public class Konsole {
     public int scrolledLines;
     public boolean hasUnreadNewMessages;
     public long lastMessageAddedTime;
+    public String originalMessage = "";
     public int spaceBetweenLines = 2;
 
     public Konsole(MinecraftClient minecraftClient) {
@@ -47,10 +48,43 @@ public class Konsole {
     }
 
     private void addMessage(Text message, int messageId, int timestamp, long mlTimestamp, boolean refresh) {
-        this.messages.add(0, new KonsoleLine<Text>(timestamp, message, messageId, mlTimestamp));
+        this.formatAndAdd(message, messageId, timestamp, mlTimestamp);
         while (this.messages.size() > 500) {
             this.messages.remove(this.messages.size() - 1);
         }
+    }
+
+    private void formatAndAdd(Text message, int messageId, int timestamp, long mlTimestamp) {
+        List<KonsoleLine<Text>> lineList = new ArrayList<>();
+        String base = message.getString();
+        String[] fullParts = base.split("\n");
+        Integer parentId = null;
+        for(int m = 0; m < fullParts.length; m++) {
+            String sum = fullParts[m];
+            int iterations = 0;
+            while(this.client.textRenderer.getWidth(sum) > KonsoleClient.SCREEN_INSTANCE.getLinesWidth()) {
+                int maxIndex = 0;
+                for(int i = 0; i < sum.length(); i++) {
+                    if(this.client.textRenderer.getWidth(sum.substring(0, i)) < KonsoleClient.SCREEN_INSTANCE.getLinesWidth()) maxIndex = i;
+                    else break;
+                }
+                String sub = sum.substring(0, maxIndex);
+                if(iterations == 0 && parentId == null) {
+                    lineList.add(new KonsoleLine<Text>(timestamp, new LiteralText(sub).setStyle(message.getStyle()), messageId, mlTimestamp));
+                    parentId = messageId;
+                } else lineList.add(new KonsoleLine<Text>(parentId, new LiteralText(sub).setStyle(message.getStyle())));
+                sum = sum.substring(maxIndex);
+                iterations++;
+            }
+            if(sum.trim().length() > 0) {
+                if(parentId == null) {
+                    lineList.add(new KonsoleLine<Text>(timestamp, new LiteralText(sum).setStyle(message.getStyle()), messageId, mlTimestamp));
+                    parentId = messageId;
+                } else lineList.add(new KonsoleLine<Text>(parentId, new LiteralText(sum).setStyle(message.getStyle())));
+            }
+        }
+        Collections.reverse(lineList);
+        this.messages.addAll(0, lineList);
     }
 
     public void reset() {

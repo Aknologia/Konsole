@@ -92,17 +92,18 @@ public class PosCommand implements Command {
             if(!blockState.getEntries().isEmpty()) {
                 lines.add("    \u00A77- Properties:\u00A7r");
                 for (Map.Entry entry : blockState.getEntries().entrySet()) {
-                    lines.add(String.format("      \u00A77-\u00A7r %s", this.propertyToString(entry)));
+                    lines.add(String.format("        \u00A7r %s", this.propertyToString(entry)));
                 }
             }
             Collection<Identifier> tags = KonsoleClient.CLIENT.getNetworkHandler().getTagManager().getOrCreateTagGroup(Registry.BLOCK_KEY).getTagsFor(((AbstractBlock.AbstractBlockState)blockState).getBlock());
             if(!tags.isEmpty()) {
                 lines.add("    \u00A77- Tags:\u00A7r");
                 for(Identifier identifier : tags) {
-                    lines.add(String.format("      \u00A77-\u00A7r #%s", identifier));
+                    lines.add(String.format("        \u00A7r #%s", identifier));
                 }
             }
         }
+
 
         if(fluitHit.getType() == HitResult.Type.BLOCK) {
             blockPos = ((BlockHitResult)fluitHit).getBlockPos();

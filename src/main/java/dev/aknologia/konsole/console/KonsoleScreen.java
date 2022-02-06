@@ -1,10 +1,10 @@
 package dev.aknologia.konsole.console;
 
 import dev.aknologia.konsole.KonsoleClient;
+import dev.aknologia.konsole.interfaces.KeyboardMixinInterface;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.screen.narration.NarrationPart;
@@ -17,7 +17,6 @@ import org.lwjgl.glfw.GLFW;
 
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.ListIterator;
@@ -26,9 +25,9 @@ import java.util.ListIterator;
 public class KonsoleScreen extends Screen {
     private static final Text USAGE_TEXT = new TranslatableText("konsole.usage");
     private String konsoleLastMessage = "";
-    private int messageHistorySize = -1;
+    private int messageHistoryOffset = 0;
     protected TextFieldWidget konsoleField;
-    private final String originalKonsoleText;
+    private String originalKonsoleText;
     private final SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
     KonsoleSuggestor konsoleSuggestor;
 
@@ -37,16 +36,17 @@ public class KonsoleScreen extends Screen {
         this.originalKonsoleText = string;
     }
 
+    public KonsoleScreen(String string, MinecraftClient client) {
+        super(new TranslatableText("konsole.title"));
+        this.originalKonsoleText = string;
+        this.client = client;
+    }
+
     @Override
     protected void init() {
+        this.originalKonsoleText = KonsoleClient.KONSOLE.originalMessage;
         this.client.keyboard.setRepeatEvents(true);
-        this.messageHistorySize = KonsoleClient.KONSOLE.getMessageHistory().size();
-        this.konsoleField = new TextFieldWidget(this.textRenderer, 4, this.height - 12, this.width - 4, 12, (Text) new TranslatableText("konsole.editBox")) {
-            @Override
-            protected MutableText getNarrationMessage() {
-                return super.getNarrationMessage().append("E");
-            }
-        };
+        this.konsoleField = new TextFieldWidget(this.textRenderer, 4, this.height - 12, this.width - 4, 12, (Text) new TranslatableText("konsole.editBox"));
         this.konsoleField.setMaxLength(256);
         this.konsoleField.setDrawsBackground(false);
         this.konsoleField.setText(this.originalKonsoleText);
@@ -82,26 +82,39 @@ public class KonsoleScreen extends Screen {
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        if(((KeyboardMixinInterface)this.client.keyboard).isCtrlPressed()) {
+            if(keyCode == GLFW.GLFW_KEY_A){
+                this.konsoleField.setSelectionStart(0);
+                this.konsoleField.setSelectionEnd(this.konsoleField.getText().length()-1);
+                return true;
+            }
+        }
         if(this.konsoleSuggestor.keyPressed(keyCode, scanCode, modifiers)) return true;
         if(super.keyPressed(keyCode, scanCode, modifiers)) { return true; }
         if(keyCode == GLFW.GLFW_KEY_ESCAPE) {
+            KonsoleClient.KONSOLE.originalMessage = this.konsoleField.getText();
             this.client.setScreen(null);
             return true;
         }
         if(keyCode == GLFW.GLFW_KEY_ENTER || keyCode == GLFW.GLFW_KEY_KP_ENTER) {
             String string = this.konsoleField.getText().trim();
             if(!string.isEmpty()) {
+                KonsoleClient.KONSOLE.addToMessageHistory(this.konsoleField.getText());
+                KonsoleClient.KONSOLE.addMessage(new LiteralText("> ").append(this.konsoleField.getText()).formatted(Formatting.GRAY));
                 KonsoleClient.KONSOLE.run(string);
             }
             this.konsoleField.setText("");
+            this.originalKonsoleText = "";
+            KonsoleClient.KONSOLE.originalMessage = "";
+            this.messageHistoryOffset = 0;
             return true;
         }
         if(keyCode == GLFW.GLFW_KEY_UP) {
-            this.setKonsoleFromHistory(-1);
+            this.setKonsoleFromHistory(1);
             return true;
         }
         if(keyCode == GLFW.GLFW_KEY_DOWN) {
-            this.setKonsoleFromHistory(1);
+            this.setKonsoleFromHistory(-1);
             return true;
         }
         if(keyCode == GLFW.GLFW_KEY_PAGE_UP) {
@@ -148,22 +161,17 @@ public class KonsoleScreen extends Screen {
     }
 
     public void setKonsoleFromHistory(int offset) {
-        int i = this.messageHistorySize + offset;
-        int j = KonsoleClient.KONSOLE.getMessageHistory().size();
-        if((i = MathHelper.clamp(i, 0, j)) == this.messageHistorySize) {
-            return;
-        }
-        if(i == j) {
-            this.messageHistorySize = j;
-            this.konsoleField.setText(this.konsoleLastMessage);
-            return;
-        }
-        if(this.messageHistorySize == j) {
-            this.konsoleLastMessage = this.konsoleField.getText();
-        }
-        this.konsoleField.setText(KonsoleClient.KONSOLE.getMessageHistory().get(i));
+        int i = KonsoleClient.KONSOLE.getMessageHistory().size();
+        if(i == 0) return;
+        int j = this.messageHistoryOffset + offset;
+        --j;
+        if(j < 0) j = 0;
+        else if(j > i) j = i;
+        List<String> history = KonsoleClient.KONSOLE.getMessageHistory();
+        Collections.reverse(history);
+        this.konsoleField.setText(history.get(j));
         this.konsoleSuggestor.setWindowActive(false);
-        this.messageHistorySize = i;
+        this.messageHistoryOffset = j;
     }
 
     @Override
@@ -222,7 +230,7 @@ public class KonsoleScreen extends Screen {
 
     public void scroll(double amount) {
         KonsoleClient.KONSOLE.scrolledLines = (int)((double)KonsoleClient.KONSOLE.scrolledLines + amount);
-        int fullLines = this.getAllLines().size();
+        int fullLines = KonsoleClient.KONSOLE.messages.size();
         int visibleLines = KonsoleClient.KONSOLE.getVisibleLineCount();
         if (KonsoleClient.KONSOLE.scrolledLines > fullLines - visibleLines) {
             KonsoleClient.KONSOLE.scrolledLines = fullLines - visibleLines;
@@ -244,68 +252,16 @@ public class KonsoleScreen extends Screen {
     }
 
     public int getTimestampWidth() {
-        return this.textRenderer.getWidth("00:00:00");
+        return this.client.textRenderer.getWidth("00:00:00");
     }
 
     public int getLinesWidth() {
         return MathHelper.floor(this.getBoxWidth() - this.getTimestampWidth() - this.originX()*2);
     }
 
-    public List<KonsoleLine<Text>> getAllLines() {
-        List<KonsoleLine<Text>> lines = new ArrayList<>();
-        if(KonsoleClient.KONSOLE.messages.size() < 1) return lines;
-        int indexCursor = KonsoleClient.KONSOLE.scrolledLines;
-        while(KonsoleClient.KONSOLE.messages.size() > indexCursor) {
-            KonsoleLine<Text> message;
-            try {
-                message = KonsoleClient.KONSOLE.messages.get(indexCursor);
-            } catch(Exception ex) {
-                break;
-            }
-            List<KonsoleLine<Text>> lineList = new ArrayList<>();
-            if(message == null) continue;
-            Text text = message.getText();
-            String base = text.getString();
-            String[] fullParts = base.split("\n");
-            Integer parentId = null;
-            for(int m = 0; m < fullParts.length; m++) {
-                String sum = fullParts[m];
-
-                int iterations = 0;
-                while (this.textRenderer.getWidth(sum) > this.getLinesWidth()) {
-                    int maxIndex = 0;
-                    for (int i = 0; i < sum.length(); i++) {
-                        if (this.textRenderer.getWidth(sum.substring(0, i)) < this.getLinesWidth()) maxIndex = i;
-                        else break;
-                    }
-                    String sub = sum.substring(0, maxIndex);
-                    if (iterations == 0 && parentId == null) {
-                        lineList.add(new KonsoleLine<Text>(message.getCreationTick(), new LiteralText(sub).setStyle(text.getStyle()), message.getId(), message.getTimestamp()));
-                        parentId = message.getId();
-                    } else
-                        lineList.add(new KonsoleLine<Text>(parentId, new LiteralText(sub).setStyle(text.getStyle())));
-                    sum = sum.substring(maxIndex);
-                    iterations++;
-                }
-                if (sum.trim().length() > 0) {
-                    if (parentId == null) {
-                        lineList.add(new KonsoleLine<Text>(message.getCreationTick(), new LiteralText(sum).setStyle(text.getStyle()), message.getId(), message.getTimestamp()));
-                        parentId = message.getId();
-                    }
-                    else
-                        lineList.add(new KonsoleLine<Text>(parentId, new LiteralText(sum).setStyle(text.getStyle())));
-                }
-            }
-            Collections.reverse(lineList);
-            lines.addAll(lineList);
-            indexCursor++;
-        }
-        return lines;
-    }
-
     public List<KonsoleLine<Text>> getVisibleLines() {
         int maxSize = KonsoleClient.KONSOLE.getVisibleLineCount();
-        List<KonsoleLine<Text>> lines = this.getAllLines();
+        List<KonsoleLine<Text>> lines = KonsoleClient.KONSOLE.messages;
         if(lines.isEmpty()) return lines;
         if(lines.size() < KonsoleClient.KONSOLE.scrolledLines + maxSize) return lines.subList(lines.size() - maxSize - 1 < 0 ? 0 : lines.size() - maxSize - 1, lines.size());
         return lines.subList(KonsoleClient.KONSOLE.scrolledLines, KonsoleClient.KONSOLE.scrolledLines + maxSize);

@@ -31,6 +31,11 @@ public class CommandDispatcher {
     private ResultConsumer consumer = (c, s, r) -> {
     };
 
+    public HashMap<String, Command> getCommands() { return this.commands; }
+    public Command getCommand(String name) {
+        return this.commands.get(name);
+    }
+
     public void register(Command command) {
         if(this.commands.keySet().contains(command.getName())) throw new IllegalArgumentException("Command '" + command.getName() + "' already defined.");
         this.commands.put(command.getName(), command);
@@ -107,7 +112,7 @@ public class CommandDispatcher {
                 int start = originalReader.getCursor();
                 Object resultArg = arg.getArgumentType().parse(originalReader);
                 int end = originalReader.getCursor();
-                if(resultArg instanceof String && resultArg.toString().trim().length() == 0) {
+                if(resultArg instanceof String && resultArg.toString().trim().length() == 0 && !arg.isRequired()) {
                     if(errors == null) errors = new LinkedHashMap<>();
                     CommandSyntaxException ex = CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerExpectedStartOfQuote().createWithContext(originalReader);
                     errors.put(originalReader.getCursor(), ex);
@@ -116,6 +121,7 @@ public class CommandDispatcher {
                 ParsedArgument<?> parsedArg = new ParsedArgument<>(start, end, resultArg);
                 contextSoFar.withArgument(arg.getName(), parsedArg);
             } catch(final CommandSyntaxException ex) {
+                if(!arg.isRequired()) break;
                 if(errors == null) errors = new LinkedHashMap<>();
                 errors.put(originalReader.getCursor(), ex);
                 continue;

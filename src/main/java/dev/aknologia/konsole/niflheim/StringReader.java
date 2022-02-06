@@ -173,6 +173,7 @@ public class StringReader implements ImmutableStringReader {
 
     public String readUnquotedString() {
         final int start = cursor;
+        if(!canRead()) return "";
         while (canRead() && isAllowedInUnquotedString(peek())) {
             skip();
         }
@@ -183,7 +184,9 @@ public class StringReader implements ImmutableStringReader {
         if (!canRead()) {
             return "";
         }
+
         final char next = peek();
+
         if (!isQuotedStringStart(next)) {
             throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerExpectedStartOfQuote().createWithContext(this);
         }
@@ -217,9 +220,12 @@ public class StringReader implements ImmutableStringReader {
     }
 
     public String readString() throws CommandSyntaxException {
+        if(canRead() && peek() == ' ') skip();
+
         if (!canRead()) {
             return "";
         }
+
         final char next = peek();
         if (isQuotedStringStart(next)) {
             skip();
@@ -235,9 +241,9 @@ public class StringReader implements ImmutableStringReader {
             throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerExpectedBool().createWithContext(this);
         }
 
-        if (value.equals("true")) {
+        if (value.equals("true") || value.equals("1")) {
             return true;
-        } else if (value.equals("false")) {
+        } else if (value.equals("false") || value.equals("0")) {
             return false;
         } else {
             cursor = start;
