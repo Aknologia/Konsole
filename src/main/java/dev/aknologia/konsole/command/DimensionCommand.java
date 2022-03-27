@@ -15,6 +15,7 @@ import net.minecraft.world.border.WorldBorder;
 import net.minecraft.world.dimension.DimensionType;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class DimensionCommand implements Command {
@@ -58,11 +59,12 @@ public class DimensionCommand implements Command {
 
         double scale = dimension.getCoordinateScale(); double height = dimension.getHeight(); double minY = dimension.getMinimumY();
 
-        boolean hasCeiling = dimension.hasCeiling(); boolean hasFixedTime = dimension.hasFixedTime();
-        boolean hasEnderDragonFight = dimension.hasEnderDragonFight(); boolean hasRaids = dimension.hasRaids();
-        boolean hasSkyLight = dimension.hasSkyLight(); boolean isBedWorking = dimension.isBedWorking();
-        boolean isNatural = dimension.isNatural(); boolean isPiglinSafe = dimension.isPiglinSafe();
-        boolean isRespawnAnchorWorking = dimension.isRespawnAnchorWorking(); boolean isUltrawarm = dimension.isUltrawarm();
+        HashMap<String, Boolean> parameters = new HashMap<>();
+        parameters.put("hasCeiling", dimension.hasCeiling()); parameters.put("hasFixedTime", dimension.hasFixedTime());
+        parameters.put("hasEnderDragonFight", dimension.hasEnderDragonFight()); parameters.put("hasRaids", dimension.hasRaids());
+        parameters.put("hasSkyLight", dimension.hasSkyLight()); parameters.put("isBedWorking", dimension.isBedWorking());
+        parameters.put("isNatural", dimension.isNatural()); parameters.put("isPiglinSafe", dimension.isPiglinSafe());
+        parameters.put("isRespawnAnchorWorking", dimension.isRespawnAnchorWorking()); parameters.put("isUltrawarm", dimension.isUltrawarm());
         String message = String.format("""
 \u00A7l\u00A7b%s
 \u00A7nWeather:\u00A7r %s
@@ -70,23 +72,14 @@ public class DimensionCommand implements Command {
     \u00A77- Scale:\u00A7r %s
     \u00A77- Height:\u00A7r %s
     \u00A77- Min Y:\u00A7r %s
-\u00A7nParameters:\u00A7r
-    \u00A77- hasCeiling:\u00A7r %s
-    \u00A77- hasFixedTime:\u00A7r %s
-    \u00A77- hasEnderDragonFight\u00A7r %s
-    \u00A77- hasRaids:\u00A7r %s
-    \u00A77- hasSkyLight:\u00A7r %s
-    \u00A77- isBedWorking:\u00A7r %s
-    \u00A77- isNatural:\u00A7r %s
-    \u00A77- isPiglinSafe:\u00A7r %s
-    \u00A77- isRespawnAnchorWorking:\u00A7r %s
-    \u00A77- isUltrawarm:\u00A7r %s""",
+\u00A7nParameters:\u00A7r\n""",
                 dimensionName,
                 weather,
-                scale, height, minY,
-                hasCeiling, hasFixedTime, hasEnderDragonFight, hasRaids, hasSkyLight,
-                isBedWorking, isNatural, isPiglinSafe, isRespawnAnchorWorking, isUltrawarm);
+                scale, height, minY);
 
+        List<String> listParam = new ArrayList<>();
+        parameters.keySet().forEach(k -> listParam.add(String.format("    \u00A77- %s:\u00A7%s %s", k, parameters.get(k) ? "a" : "c", parameters.get(k))));
+        message = message.concat(String.join("\n", listParam));
         KonsoleClient.KONSOLE.addMessage(new LiteralText(message));
         return 1;
     }

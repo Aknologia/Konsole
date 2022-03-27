@@ -267,9 +267,6 @@ public class KonsoleScreen extends Screen {
         return lines.subList(KonsoleClient.KONSOLE.scrolledLines, KonsoleClient.KONSOLE.scrolledLines + maxSize);
     }
 
-    @Override
-    public boolean isPauseScreen() { return false; }
-
     private void setText(String text) { this.konsoleField.setText(text); }
 
     @Override

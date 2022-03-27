@@ -44,7 +44,7 @@ public class Konsole {
 
     private void addMessage(Text message, int messageId) {
         this.addMessage(message, messageId, this.client.inGameHud.getTicks(), System.currentTimeMillis(), false);
-        KonsoleClient.LOG.info("[CONSOLE] %s", (Object)message.getString().replaceAll("\r", "\\\\r").replaceAll("\n", "\\\\n"));
+        KonsoleClient.LOG.info("[CONSOLE] %s", (Object)message.getString().replaceAll("\r", "\\\\r"));
     }
 
     private void addMessage(Text message, int messageId, int timestamp, long mlTimestamp, boolean refresh) {

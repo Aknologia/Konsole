@@ -27,10 +27,8 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 import net.minecraft.world.border.WorldBorder;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Stream;
 
 public class PosCommand implements Command {
     public String name = "pos";
@@ -95,12 +93,13 @@ public class PosCommand implements Command {
                     lines.add(String.format("        \u00A7r %s", this.propertyToString(entry)));
                 }
             }
-            Collection<Identifier> tags = KonsoleClient.CLIENT.getNetworkHandler().getTagManager().getOrCreateTagGroup(Registry.BLOCK_KEY).getTagsFor(((AbstractBlock.AbstractBlockState)blockState).getBlock());
-            if(!tags.isEmpty()) {
+
+            Stream tagStream = blockState.streamTags().map((tagKey) -> String.format("        \u00A7r #%s", tagKey));
+            List<String> tagList = new ArrayList();
+            tagStream.forEach(tag -> tagList.add((String) tag));
+            if(!tagList.isEmpty()){
                 lines.add("    \u00A77- Tags:\u00A7r");
-                for(Identifier identifier : tags) {
-                    lines.add(String.format("        \u00A7r #%s", identifier));
-                }
+                lines.addAll(tagList);
             }
         }
 
@@ -109,19 +108,19 @@ public class PosCommand implements Command {
             blockPos = ((BlockHitResult)fluitHit).getBlockPos();
             FluidState fluidState = world.getFluidState((BlockPos) blockPos);
             lines.add(String.format("\u00A7nTargeted Fluid:\u00A7r %s, %s, %s", blockPos.getX(), blockPos.getY(), blockPos.getZ()));
-            lines.add(String.format("   \u00A77-\u00A7r %s", String.valueOf(Registry.FLUID.getId(((FluidState)fluidState).getFluid()))));
+            lines.add(String.format("    \u00A77-\u00A7r %s", String.valueOf(Registry.FLUID.getId(((FluidState)fluidState).getFluid()))));
             if(!fluidState.getEntries().isEmpty()) {
                 lines.add("    \u00A77- Properties:\u00A7r");
                 for (Map.Entry entry : fluidState.getEntries().entrySet()) {
                     lines.add(String.format("       \u00A7r %s", this.propertyToString(entry)));
                 }
             }
-            Collection<Identifier> tags = KonsoleClient.CLIENT.getNetworkHandler().getTagManager().getOrCreateTagGroup(Registry.FLUID_KEY).getTagsFor(((FluidState)fluidState).getFluid());
-            if(!tags.isEmpty()) {
+            Stream fluidTagStream = fluidState.streamTags().map((tagKey) -> String.format("        \u00A7r #%s", tagKey));
+            List<String> tagList = new ArrayList();
+            fluidTagStream.forEach(tag -> tagList.add((String) tag));
+            if(!tagList.isEmpty()){
                 lines.add("    \u00A77- Tags:\u00A7r");
-                for(Identifier identifier : tags) {
-                    lines.add(String.format("       \u00A7r #%s", identifier));
-                }
+                lines.addAll(tagList);
             }
         }
 
