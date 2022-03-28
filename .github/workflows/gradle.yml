@@ -25,6 +25,8 @@ jobs:
       with:
         java-version: '11'
         distribution: 'temurin'
+    - name: Debug
+      run: pwd
     - name: Set gradlew as executable
       run: |
         cd /home/runner/work/Konsole/Konsole/
