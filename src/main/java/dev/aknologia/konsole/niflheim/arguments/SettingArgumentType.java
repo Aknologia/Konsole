@@ -29,7 +29,7 @@ public class SettingArgumentType implements ArgumentType<Settings.Setting> {
     public Settings.Setting parse(final StringReader reader) throws CommandSyntaxException {
         String settingName = reader.readString().trim();
         if(!KonsoleClient.SETTINGS.getList().containsKey(settingName)) throw SETTING_NOT_FOUND_EXCEPTION.create(settingName);
-        return new Settings.Setting(settingName, KonsoleClient.SETTINGS.getSetting(settingName));
+        return new Settings.Setting(settingName, KonsoleClient.SETTINGS.get(settingName));
     }
 
     @Override

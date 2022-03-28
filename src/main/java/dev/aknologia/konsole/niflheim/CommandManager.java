@@ -1,8 +1,12 @@
-package dev.aknologia.konsole.command;
+package dev.aknologia.konsole.niflheim;
 
 import dev.aknologia.konsole.KonsoleClient;
+import dev.aknologia.konsole.command.*;
+import dev.aknologia.konsole.convar.GammaConVar;
 import dev.aknologia.konsole.niflheim.CommandDispatcher;
 import dev.aknologia.konsole.niflheim.ParseResults;
+import dev.aknologia.konsole.niflheim.arguments.Argument;
+import dev.aknologia.konsole.niflheim.context.CommandContext;
 import dev.aknologia.konsole.niflheim.exceptions.CommandSyntaxException;
 import net.minecraft.SharedConstants;
 import net.minecraft.text.*;
@@ -10,36 +14,16 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Util;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.function.Function;
+
 public class CommandManager {
     private final CommandDispatcher dispatcher = new CommandDispatcher();
     public CommandManager() {
-        new HelpCommand().register(this.dispatcher);
-        new SettingsCommand().register(this.dispatcher);
-
-        new EchoCommand().register(this.dispatcher);
-        new ClearCommand().register(this.dispatcher);
-
-        new DisconnectCommand().register(this.dispatcher);
-        new QuitCommand().register(this.dispatcher);
-
-        new BindCommand().register(this.dispatcher);
-        new UnbindCommand().register(this.dispatcher);
-        new UnbindAllCommand().register(this.dispatcher);
-        new ListBindCommand().register(this.dispatcher);
-
-        new SayCommand().register(this.dispatcher);
-
-        new WorldCommand().register(this.dispatcher);
-        new DimensionCommand().register(this.dispatcher);
-        new PosCommand().register(this.dispatcher);
-
-        new HideHUDCommand().register(this.dispatcher);
-        new RefreshCommand().register(this.dispatcher);
-        new HitboxCommand().register(this.dispatcher);
-        new ChunkBorderCommand().register(this.dispatcher);
-        new AdvancedTooltipsCommand().register(this.dispatcher);
-
-        new ActionCommands().register(this.dispatcher);
+        this.registerAll();
 
         this.dispatcher.setConsumer(((context, success, result) -> {
             KonsoleClient.LOG.info("[DISPATCHER] %s [%s > %s] => %s", context.getInput(), context.getCommand().getName(), result, success ? "SUCCESS" : "FAIL");
@@ -106,5 +90,56 @@ public class CommandManager {
             return CommandSyntaxException.BUILT_IN_EXCEPTIONS.dispatcherUnknownCommand().createWithContext(parse.getReader());
         }
         return CommandSyntaxException.BUILT_IN_EXCEPTIONS.dispatcherUnknownArgument().createWithContext(parse.getReader());
+    }
+
+    public static Command fromConVar(ConsoleVariable<?> convar) {
+        Function callback = convar.hasCallback() ? convar.getCallback() : (Object contextObj) -> {
+            CommandContext context = (CommandContext) contextObj;
+            try {
+                convar.set(convar.getArgumentValue(context));
+            } catch(IllegalArgumentException error) {
+                KonsoleClient.KONSOLE.addMessage(new LiteralText(convar.toString()));
+            }
+
+            return 1;
+        };
+        List<Argument> arguments = new ArrayList<>();
+        arguments.add(new Argument("value", convar.getType().getArgument(convar.getArgumentParams())));
+
+        return new DynamicCommand(convar.getName(), convar.getDescription(), arguments, callback);
+    }
+
+    private void registerAll() {
+        /* REGISTER COMMANDS */
+        new HelpCommand().register(this.dispatcher);
+        new SettingsCommand().register(this.dispatcher);
+
+        new EchoCommand().register(this.dispatcher);
+        new ClearCommand().register(this.dispatcher);
+
+        new DisconnectCommand().register(this.dispatcher);
+        new QuitCommand().register(this.dispatcher);
+
+        new BindCommand().register(this.dispatcher);
+        new UnbindCommand().register(this.dispatcher);
+        new UnbindAllCommand().register(this.dispatcher);
+        new ListBindCommand().register(this.dispatcher);
+
+        new SayCommand().register(this.dispatcher);
+
+        new WorldCommand().register(this.dispatcher);
+        new DimensionCommand().register(this.dispatcher);
+        new PosCommand().register(this.dispatcher);
+
+        new HideHUDCommand().register(this.dispatcher);
+        new RefreshCommand().register(this.dispatcher);
+        new HitboxCommand().register(this.dispatcher);
+        new ChunkBorderCommand().register(this.dispatcher);
+        new AdvancedTooltipsCommand().register(this.dispatcher);
+
+        new ActionCommands().register(this.dispatcher);
+
+        /* REGISTER CONVARS */
+        new GammaConVar().register(this.dispatcher);
     }
 }

@@ -27,6 +27,7 @@ public class CommandDispatcher {
     private static final String USAGE_OR = "|";
 
     private HashMap<String, Command> commands = new HashMap<>();
+    private HashMap<String, ConsoleVariable<?>> convars = new HashMap<>();
 
     private ResultConsumer consumer = (c, s, r) -> {
     };
@@ -39,6 +40,10 @@ public class CommandDispatcher {
     public void register(Command command) {
         if(this.commands.keySet().contains(command.getName())) throw new IllegalArgumentException("Command '" + command.getName() + "' already defined.");
         this.commands.put(command.getName(), command);
+    }
+    public void register(ConsoleVariable<?> convar) {
+        if(this.convars.keySet().contains(convar.getName())) throw new IllegalArgumentException("ConVar '" + convar.getName() + "' already defined.");
+        this.convars.put(convar.getName(), convar);
     }
 
     public void setConsumer(final ResultConsumer consumer) { this.consumer = consumer; }
@@ -101,7 +106,12 @@ public class CommandDispatcher {
         final String commandName = originalReader.readUnquotedString();
 
         Command command = this.commands.get(commandName);
-        if(command == null) throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.dispatcherUnknownCommand().createWithContext(originalReader);
+        ConsoleVariable<?> convar = null;
+        if(command == null) {
+            convar = this.convars.get(commandName);
+            if(convar != null) command = CommandManager.fromConVar(convar);
+            else throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.dispatcherUnknownCommand().createWithContext(originalReader);
+        }
 
         contextSoFar.withCommand(command);
         ListIterator<Argument> listIterator = command.getArguments().listIterator();
@@ -186,7 +196,8 @@ public class CommandDispatcher {
     public Suggestions getCommandCompletionSuggestions(String truncatedInputLowerCase, int cursor) {
         StringRange range = new StringRange(0, cursor);
         List<Suggestion> suggestions = new ArrayList<>();
-        Set<String> commands = KonsoleClient.COMMAND_MANAGER.getDispatcher().commands.keySet();
+        List<String> commands = new ArrayList<>(KonsoleClient.COMMAND_MANAGER.getDispatcher().commands.keySet());
+        commands.addAll(new ArrayList<>(KonsoleClient.COMMAND_MANAGER.getDispatcher().convars.keySet()));
         List<Suggestion> list2 = new ArrayList<>();
         Iterator<String> iterator = commands.iterator();
         while(iterator.hasNext()) {

@@ -17,7 +17,7 @@ public class Settings {
         LIST = list;
     }
 
-    public boolean getSetting(final String key) {
+    public boolean get(final String key) {
         if(SETTINGS.get(key) != null) return SETTINGS.get(key);
         else return LIST.get(key);
     }
@@ -26,7 +26,7 @@ public class Settings {
         return SETTINGS;
     }
 
-    public void setSetting(String key, boolean value) {
+    public void set(String key, boolean value) {
         SETTINGS.put(key, value);
     }
 

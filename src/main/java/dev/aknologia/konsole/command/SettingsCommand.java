@@ -41,7 +41,7 @@ public class SettingsCommand implements Command {
             lines.add(String.format("\u00A7nValue:\u00A7r %s%s", valSep, setting.getValue()));
             KonsoleClient.KONSOLE.addMessage(new LiteralText(String.join("\n", lines)));
         } else {
-            KonsoleClient.SETTINGS.setSetting(setting.getName(), setting.getValue());
+            KonsoleClient.SETTINGS.set(setting.getName(), setting.getValue());
         }
         return 1;
     }

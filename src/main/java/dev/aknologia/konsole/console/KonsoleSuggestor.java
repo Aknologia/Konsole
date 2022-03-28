@@ -4,13 +4,12 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.mojang.brigadier.Message;
 import dev.aknologia.konsole.KonsoleClient;
-import dev.aknologia.konsole.command.CommandManager;
+import dev.aknologia.konsole.niflheim.CommandManager;
 import dev.aknologia.konsole.niflheim.CommandDispatcher;
 import dev.aknologia.konsole.niflheim.ParseResults;
 import dev.aknologia.konsole.niflheim.ParsedArgument;
 import dev.aknologia.konsole.niflheim.StringReader;
 import dev.aknologia.konsole.niflheim.context.CommandContextBuilder;
-import dev.aknologia.konsole.niflheim.context.StringRange;
 import dev.aknologia.konsole.niflheim.exceptions.CommandSyntaxException;
 import dev.aknologia.konsole.niflheim.suggestion.Suggestion;
 import dev.aknologia.konsole.niflheim.suggestion.SuggestionContext;
@@ -120,20 +119,23 @@ public class KonsoleSuggestor {
         int i = KonsoleSuggestor.getLastPlayerNameStart(string);
         String string2 = string.substring(i).toLowerCase(Locale.ROOT);
         ArrayList<Suggestion> list = Lists.newArrayList();
-        ArrayList<Suggestion> list2 = Lists.newArrayList();
         for(Suggestion suggestion : suggestions.getList()) {
             if(suggestion.getText().startsWith(string2) || suggestion.getText().startsWith("minecraft:" + string2)) {
                 list.add(suggestion);
                 continue;
             }
-            list2.add(suggestion);
         }
-        list.addAll(list2);
         return list;
     }
 
     public void refresh() {
         String string = this.textField.getText();
+        if(string.isEmpty() || string.isBlank())  {
+            this.textField.setSuggestion(null);
+            this.window = null;
+            this.messages.clear();
+            return;
+        }
         if(this.parse != null && !this.parse.getReader().getString().equals(string)) {
             this.parse = null;
         }
@@ -156,7 +158,7 @@ public class KonsoleSuggestor {
         int n = j = stringReader.getCursor();
         if(!(i < j || this.window != null && this.completingSuggestions)) {
             this.suggestions = commandDispatcher.getCompletionSuggestions(this.parse, this.textField.getText(), i);
-            this.show();
+            if(!this.suggestions.isEmpty()) this.show();
         }
     }
 
@@ -409,6 +411,7 @@ public class KonsoleSuggestor {
         }
 
         public void select(int index) {
+            if(this.suggestions.isEmpty() || this.suggestions.size() < 1) return;
             this.selection = index;
             if(this.selection < 0) {
                 this.selection += this.suggestions.size();

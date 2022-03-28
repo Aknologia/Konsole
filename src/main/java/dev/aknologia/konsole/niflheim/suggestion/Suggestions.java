@@ -19,7 +19,7 @@ public class Suggestions {
 
     public List<Suggestion> getList() { return suggestions; }
 
-    public boolean isEmpty() { return suggestions.isEmpty(); }
+    public boolean isEmpty() { return suggestions.isEmpty() || suggestions.size() < 1; }
 
     @Override
     public boolean equals(final Object o) {

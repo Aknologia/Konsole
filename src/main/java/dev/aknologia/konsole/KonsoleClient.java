@@ -1,10 +1,9 @@
 package dev.aknologia.konsole;
 
-import dev.aknologia.konsole.command.CommandManager;
+import dev.aknologia.konsole.niflheim.CommandManager;
 import dev.aknologia.konsole.console.Konsole;
 import dev.aknologia.konsole.console.KonsoleScreen;
 import dev.aknologia.konsole.input.KeyManager;
-import dev.aknologia.konsole.niflheim.arguments.types.Keys;
 import dev.aknologia.konsole.niflheim.arguments.types.Settings;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.loader.api.FabricLoader;

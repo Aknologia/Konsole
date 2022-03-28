@@ -34,7 +34,7 @@ public class CommandContext {
 
     public Command getCommand() { return command; }
 
-    public <V> V getArgument(final String name, final Class<V> clazz) {
+    public <V> V getArgument(final String name, final Class<V> clazz) throws IllegalArgumentException {
         final ParsedArgument<?> argument = arguments.get(name);
 
         if(argument == null) {
