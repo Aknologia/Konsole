@@ -58,6 +58,11 @@ public class KonsoleScreen extends Screen {
     }
 
     @Override
+    public boolean shouldPause() {
+        return false;
+    }
+
+    @Override
     public void resize(MinecraftClient client, int width, int height) {
         String string = this.konsoleField.getText();
         this.init(client, width, height);

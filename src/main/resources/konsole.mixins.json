@@ -4,6 +4,7 @@
   "package": "dev.aknologia.konsole.mixin",
   "compatibilityLevel": "JAVA_16",
   "client": [
+    "MinecraftClientMixin",
     "KeyboardMixin",
     "MouseMixin",
     "ChatHudListenerMixin"

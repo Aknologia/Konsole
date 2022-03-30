@@ -98,6 +98,8 @@ public class CommandManager {
             try {
                 convar.set(convar.getArgumentValue(context));
             } catch(IllegalArgumentException error) {
+                System.out.println(error);
+                System.out.println(convar.getType());
                 KonsoleClient.KONSOLE.addMessage(new LiteralText(convar.toString()));
             }
 
@@ -105,6 +107,7 @@ public class CommandManager {
         };
         List<Argument> arguments = new ArrayList<>();
         arguments.add(new Argument("value", convar.getType().getArgument(convar.getArgumentParams())));
+        System.out.println(convar.getType().getArgument(convar.getArgumentParams()));
 
         return new DynamicCommand(convar.getName(), convar.getDescription(), arguments, callback);
     }

@@ -36,6 +36,7 @@ public class CommandDispatcher {
     public Command getCommand(String name) {
         return this.commands.get(name);
     }
+    public ConsoleVariable<?> getConVar(String name) { return this.convars.get(name); }
 
     public void register(Command command) {
         if(this.commands.keySet().contains(command.getName())) throw new IllegalArgumentException("Command '" + command.getName() + "' already defined.");
@@ -58,19 +59,24 @@ public class CommandDispatcher {
     }
 
     public int execute(final ParseResults parse) throws CommandSyntaxException {
+        System.out.println(parse.getContext().getArguments().size());
         if(parse.getReader().canRead()) {
             if(parse.getExceptions().size() == 1) {
                 throw parse.getExceptions().values().iterator().next();
             } else if(parse.getContext().getRange().isEmpty()) {
+                System.out.println(parse.getReader().getString() + ", " +parse.getReader().getRemaining());
+                System.out.println(parse.getContext().getRange());
+                System.out.println("Found from empty range");
                 throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.dispatcherUnknownCommand().createWithContext(parse.getReader());
             } else {
+                System.out.println("Found from remaining reader length");
                 throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.dispatcherUnknownArgument().createWithContext(parse.getReader());
             }
         }
 
         int result = 0;
         final String command = parse.getReader().getString();
-        System.out.println(command);
+        System.out.println("Passed command");
         final CommandContext context = parse.getContext().build(command);
         if(context.getCommand() != null) {
             try {
@@ -84,6 +90,7 @@ public class CommandDispatcher {
                 KonsoleClient.COMMAND_MANAGER.sendError(new LiteralText("Missing required argument"));
             }
         } else {
+            System.out.println("Failed to find command");
             consumer.onCommandComplete(context, false, 0);
             throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.dispatcherUnknownCommand().createWithContext(parse.getReader());
         }
@@ -106,7 +113,7 @@ public class CommandDispatcher {
         final String commandName = originalReader.readUnquotedString();
 
         Command command = this.commands.get(commandName);
-        ConsoleVariable<?> convar = null;
+        ConsoleVariable<?> convar;
         if(command == null) {
             convar = this.convars.get(commandName);
             if(convar != null) command = CommandManager.fromConVar(convar);

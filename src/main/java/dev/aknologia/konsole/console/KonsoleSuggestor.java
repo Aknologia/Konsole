@@ -424,6 +424,10 @@ public class KonsoleSuggestor {
         }
 
         public void complete() {
+            if(this.suggestions.isEmpty() || this.selection >= this.suggestions.size()){
+                this.selection = this.suggestions.size();
+                return;
+            }
             Suggestion suggestion = this.suggestions.get(this.selection);
             KonsoleSuggestor.this.completingSuggestions = true;
             KonsoleSuggestor.this.textField.setText(suggestion.apply(this.typedText));

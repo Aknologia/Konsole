@@ -96,6 +96,7 @@ public class StringReader implements ImmutableStringReader {
     }
 
     public int readInt() throws CommandSyntaxException {
+        this.skipWhitespace();
         final int start = cursor;
         while (canRead() && isAllowedNumber(peek())) {
             skip();
@@ -113,6 +114,7 @@ public class StringReader implements ImmutableStringReader {
     }
 
     public long readLong() throws CommandSyntaxException {
+        this.skipWhitespace();
         final int start = cursor;
         while (canRead() && isAllowedNumber(peek())) {
             skip();
@@ -130,6 +132,7 @@ public class StringReader implements ImmutableStringReader {
     }
 
     public double readDouble() throws CommandSyntaxException {
+        this.skipWhitespace();
         final int start = cursor;
         while (canRead() && isAllowedNumber(peek())) {
             skip();
@@ -168,7 +171,8 @@ public class StringReader implements ImmutableStringReader {
                 || c >= 'A' && c <= 'Z'
                 || c >= 'a' && c <= 'z'
                 || c == '_' || c == '-'
-                || c == '.' || c == '+';
+                || c == '.' || c == '+'
+                || c == '*';
     }
 
     public String readUnquotedString() {

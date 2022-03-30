@@ -1,10 +1,7 @@
 package dev.aknologia.konsole.niflheim;
 
 import dev.aknologia.konsole.KonsoleClient;
-import dev.aknologia.konsole.niflheim.arguments.ArgumentType;
-import dev.aknologia.konsole.niflheim.arguments.BoolArgumentType;
-import dev.aknologia.konsole.niflheim.arguments.IntegerArgumentType;
-import dev.aknologia.konsole.niflheim.arguments.StringArgumentType;
+import dev.aknologia.konsole.niflheim.arguments.*;
 import dev.aknologia.konsole.niflheim.context.CommandContext;
 
 import java.util.function.Function;
@@ -90,7 +87,9 @@ public class ConsoleVariable<T> {
 enum ConVarType {
     STRING(StringArgumentType.class),
     INTEGER(IntegerArgumentType.class),
-    BOOLEAN(BoolArgumentType.class);
+    BOOLEAN(BoolArgumentType.class),
+    DOUBLE(DoubleArgumentType.class),
+    LONG(LongArgumentType.class);
 
     public final Class<?> ARGUMENT_TYPE;
 
@@ -106,6 +105,10 @@ enum ConVarType {
                 return ConVarType.INTEGER;
             case "Boolean":
                 return ConVarType.BOOLEAN;
+            case "Double":
+                return ConVarType.DOUBLE;
+            case "Long":
+                return ConVarType.LONG;
             default:
                 KonsoleClient.LOG.warn("Found unknown type for ConVar: %s", varType.getSimpleName());
                 return ConVarType.STRING;
@@ -113,14 +116,25 @@ enum ConVarType {
     }
 
     public ArgumentType getArgument(Object[] argumentParams) {
-        String pkg = this.ARGUMENT_TYPE.getPackageName();
-        if(pkg == StringArgumentType.class.getPackageName()) return StringArgumentType.string();
-        if(pkg == BoolArgumentType.class.getPackageName()) return BoolArgumentType.bool();
-        if(pkg == IntegerArgumentType.class.getPackageName()) {
+        Class pkg = this.ARGUMENT_TYPE;
+        if(pkg.isAssignableFrom(StringArgumentType.class)) return StringArgumentType.string();
+        if(pkg.isAssignableFrom(BoolArgumentType.class)) return BoolArgumentType.bool();
+        if(pkg.isAssignableFrom(IntegerArgumentType.class)) {
             if(argumentParams.length == 1) return IntegerArgumentType.integer((int) argumentParams[0]);
             else if(argumentParams.length > 1) return IntegerArgumentType.integer((int) argumentParams[0], (int) argumentParams[1]);
             else return IntegerArgumentType.integer();
         }
+        if(pkg.isAssignableFrom(DoubleArgumentType.class)) {
+            if(argumentParams.length == 1) return DoubleArgumentType.doubleArg((int) argumentParams[0]);
+            else if(argumentParams.length > 1) return DoubleArgumentType.doubleArg((int) argumentParams[0], (int) argumentParams[1]);
+            else return DoubleArgumentType.doubleArg();
+        }
+        if(pkg.isAssignableFrom(LongArgumentType.class)) {
+            if(argumentParams.length == 1) return LongArgumentType.longArg((int) argumentParams[0]);
+            else if(argumentParams.length > 1) return LongArgumentType.longArg((int) argumentParams[0], (int) argumentParams[1]);
+            else return LongArgumentType.longArg();
+        }
+        KonsoleClient.LOG.warn("Could not find a suitable argument type for ConVarType: %s\nReversing to default StringArgumentType.", this.name());
         return StringArgumentType.string();
     }
 }
