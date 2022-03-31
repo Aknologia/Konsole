@@ -13,6 +13,7 @@ import net.minecraft.util.math.MathHelper;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
+import java.util.regex.Pattern;
 
 @Environment(EnvType.CLIENT)
 public class Konsole {
@@ -39,12 +40,17 @@ public class Konsole {
     }
 
     public void addMessage(Text message) {
-        this.addMessage(message, 0);
+        this.addMessage(message, 0, true);
     }
+    public void addMessage(Text message, boolean stdout) { this.addMessage(message, 0, stdout); }
 
-    private void addMessage(Text message, int messageId) {
+    private void addMessage(Text message, int messageId, boolean stdout) {
         this.addMessage(message, messageId, this.client.inGameHud.getTicks(), System.currentTimeMillis(), false);
-        KonsoleClient.LOG.info("[CONSOLE] %s", (Object)message.getString().replaceAll("\r", "\\\\r"));
+        if(stdout) {
+            String out = message.getString().replaceAll("\r", "\\\\r");
+            Pattern p = Pattern.compile("\u00A7[a-zA-Z0-9]");
+            KonsoleClient.LOG.info("[CONSOLE] %s", p.matcher(out).replaceAll(""));
+        }
     }
 
     private void addMessage(Text message, int messageId, int timestamp, long mlTimestamp, boolean refresh) {

@@ -21,7 +21,7 @@ public class ChatHudListenerMixin {
     )
     public void onChatMessage(MessageType messageType, Text message, UUID sender, CallbackInfo ci) {
         if(messageType == MessageType.CHAT) {
-            KonsoleClient.KONSOLE.addMessage(new LiteralText("\u00A7a[CHAT]\u00A7r ").append(message));
+            KonsoleClient.KONSOLE.addMessage(new LiteralText("\u00A7a[CHAT]\u00A7r ").append(message), false);
         }
     }
 }
