@@ -22,6 +22,7 @@ public class ActionCommands {
         new UseCommand().register(dispatcher);
         new UseLoopCommand().register(dispatcher);
         new JumpCommand().register(dispatcher);
+        new JumpLoopCommand().register(dispatcher);
         new SneakCommand().register(dispatcher);
         new UnsneakCommand().register(dispatcher);
     }
@@ -258,8 +259,71 @@ public class ActionCommands {
 
         @Override
         public int run(CommandContext context) throws CommandSyntaxException {
-            KonsoleClient.CLIENT.player.input.jumping = true;
+            if(MinecraftClient.getInstance().player.isOnGround()) MinecraftClient.getInstance().player.jump();
             return 1;
+        }
+
+        @Override
+        public List<Argument> getArguments() {
+            return this.arguments;
+        }
+
+        @Override
+        public void setArguments(List<Argument> arguments) {
+            this.arguments = arguments;
+        }
+
+        @Override
+        public String getName() {
+            return this.name;
+        }
+
+        @Override
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        @Override
+        public String getDescription() {
+            return this.description;
+        }
+
+        @Override
+        public void setDescription(String description) {
+            this.description = description;
+        }
+    }
+
+    class JumpLoopCommand implements Command {
+        public String name = "*jump";
+        public String description = "Jump continuously.";
+        public List<Argument> arguments = new ArrayList<>();
+
+        private boolean enabled = false;
+
+        @Override
+        public void register(CommandDispatcher dispatcher) {
+            dispatcher.register(this);
+        }
+
+        @Override
+        public int run(CommandContext context) throws CommandSyntaxException {
+            this.enabled = !this.enabled;
+            if(this.enabled) this.trigger();
+            return 1;
+        }
+
+        private void trigger() {
+            JumpLoopCommand instance = this;
+            Timer t = new Timer();
+            TimerTask task = new TimerTask() {
+                @Override
+                public void run() {
+                    if(!instance.enabled) t.cancel();
+                    else if(MinecraftClient.getInstance().player.isOnGround()) MinecraftClient.getInstance().player.jump();
+                }
+            };
+            t.scheduleAtFixedRate(task, new Date(), 50);
         }
 
         @Override

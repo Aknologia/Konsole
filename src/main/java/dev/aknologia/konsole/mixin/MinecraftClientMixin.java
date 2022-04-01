@@ -114,6 +114,7 @@ public abstract class MinecraftClientMixin implements MinecraftClientMixinInterf
     }
 
     /**@author*/
+    // Bullshit overwriting (That's a very bad solution, need to fix later)
     @Overwrite
     public void tick() {
         if (this.itemUseCooldown > 0) {

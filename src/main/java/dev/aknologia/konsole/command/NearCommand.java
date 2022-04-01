@@ -9,6 +9,7 @@ import dev.aknologia.konsole.niflheim.context.CommandContext;
 import dev.aknologia.konsole.niflheim.exceptions.CommandSyntaxException;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.text.LiteralText;
 import net.minecraft.util.math.Box;
 
@@ -34,39 +35,40 @@ public class NearCommand implements Command {
         try { radius = context.getArgument("radius", Integer.class); } catch(IllegalArgumentException ignored) {}
         List<LivingEntity> entities = MinecraftClient.getInstance().player.world.getNonSpectatingEntities(LivingEntity.class, Box.of(MinecraftClient.getInstance().player.getPos(), radius, radius, radius));
         HashMap<LivingEntity, Integer> entityMap = new HashMap<>();
-        entities.forEach(le -> this.addOrIncrement(entityMap, le));
+        List<LivingEntity> players = new ArrayList<>();
+        entities.forEach(le -> {
+            System.out.println(le);
+            if(le instanceof PlayerEntity) {
+                if (le.getId() != MinecraftClient.getInstance().player.getId()) players.add(le);
+            } else this.addOrIncrement(entityMap, le);
+        });
+
 
         List<String> entityNames = new ArrayList<>();
         entityMap.keySet().stream().toList().forEach(le -> {
-            String name = (le.hasCustomName() ? le.getCustomName() : le.getDisplayName().toString().isEmpty() || le.getDisplayName().toString().isBlank() ? le.getName() : le.getDisplayName()).asString();
-            String quantity = " \u00A7rx\u00A7b" + entityMap.get(le).toString();
+            String name = le.getName().getString();
+            if(le.hasCustomName()) name = le.getCustomName().getString();
+            String quantity = " \u00A7rx\u00A7b" + entityMap.get(le).toString() + "\u00A7r";
             if(entityMap.get(le) < 2) quantity = "";
             entityNames.add(name + quantity);
         });
-        KonsoleClient.KONSOLE.addMessage(new LiteralText(String.join(", ", entityNames)));
+        List<String> playerNames = new ArrayList<>();
+        players.forEach(pl -> playerNames.add(pl.getDisplayName().asString()));
+        KonsoleClient.KONSOLE.addMessage(new LiteralText(String.format("\u00A76\u00A7nPlayers:\u00A7r %s\n\u00A76\u00A7nLiving Entities:\u00A7r %s", playerNames.isEmpty() ? "\u00A77\u00A7onone\u00A7r" : String.join(", ", playerNames), entityNames.isEmpty() ? "\u00A77\u00A7onone\u00A7r" : String.join(", ", entityNames))));
         return 1;
     }
 
     private boolean addOrIncrement(HashMap<LivingEntity, Integer> entityMap, LivingEntity livingEntity) {
-        if(livingEntity.getId() == MinecraftClient.getInstance().player.getId()) return false;
         List<LivingEntity> keyList = entityMap.keySet().stream().toList();
         for(int i = 0; i < keyList.size(); i++) {
             LivingEntity le = keyList.get(i);
-            if(this.isEqual(livingEntity, le)) {
+            if(le.getType() == livingEntity.getType() && (le.hasCustomName() && livingEntity.hasCustomName() ? le.getCustomName() == livingEntity.getCustomName() : true)) {
                 entityMap.put(le, entityMap.get(le) + 1);
                 return true;
             }
         }
         entityMap.put(livingEntity, 1);
         return false;
-    }
-
-    private boolean isEqual(LivingEntity e1, LivingEntity e2) {
-        if(e1.getDisplayName() != e2.getDisplayName()) return false;
-        if(e1.getName() != e2.getName()) return false;
-        if(e1.hasCustomName() != e2.hasCustomName() || e1.getCustomName() != e2.getCustomName()) return false;
-        if(e1.getType() != e2.getType()) return false;
-        return true;
     }
 
     @Override

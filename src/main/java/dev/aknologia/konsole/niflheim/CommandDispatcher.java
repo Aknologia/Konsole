@@ -59,24 +59,18 @@ public class CommandDispatcher {
     }
 
     public int execute(final ParseResults parse) throws CommandSyntaxException {
-        System.out.println(parse.getContext().getArguments().size());
         if(parse.getReader().canRead()) {
             if(parse.getExceptions().size() == 1) {
                 throw parse.getExceptions().values().iterator().next();
             } else if(parse.getContext().getRange().isEmpty()) {
-                System.out.println(parse.getReader().getString() + ", " +parse.getReader().getRemaining());
-                System.out.println(parse.getContext().getRange());
-                System.out.println("Found from empty range");
                 throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.dispatcherUnknownCommand().createWithContext(parse.getReader());
             } else {
-                System.out.println("Found from remaining reader length");
                 throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.dispatcherUnknownArgument().createWithContext(parse.getReader());
             }
         }
 
         int result = 0;
         final String command = parse.getReader().getString();
-        System.out.println("Passed command");
         final CommandContext context = parse.getContext().build(command);
         if(context.getCommand() != null) {
             try {
@@ -90,7 +84,6 @@ public class CommandDispatcher {
                 KonsoleClient.COMMAND_MANAGER.sendError(new LiteralText("Missing required argument"));
             }
         } else {
-            System.out.println("Failed to find command");
             consumer.onCommandComplete(context, false, 0);
             throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.dispatcherUnknownCommand().createWithContext(parse.getReader());
         }
