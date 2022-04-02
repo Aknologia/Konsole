@@ -150,6 +150,7 @@ public class StringReader implements ImmutableStringReader {
     }
 
     public float readFloat() throws CommandSyntaxException {
+        this.skipWhitespace();
         final int start = cursor;
         while (canRead() && isAllowedNumber(peek())) {
             skip();
