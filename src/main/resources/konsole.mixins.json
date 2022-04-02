@@ -7,7 +7,8 @@
     "MinecraftClientMixin",
     "KeyboardMixin",
     "MouseMixin",
-    "ChatHudListenerMixin"
+    "ChatHudListenerMixin",
+    "DebugRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1

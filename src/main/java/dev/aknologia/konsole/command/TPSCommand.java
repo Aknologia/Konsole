@@ -4,27 +4,36 @@ import dev.aknologia.konsole.KonsoleClient;
 import dev.aknologia.konsole.niflheim.Command;
 import dev.aknologia.konsole.niflheim.CommandDispatcher;
 import dev.aknologia.konsole.niflheim.arguments.Argument;
-import dev.aknologia.konsole.niflheim.arguments.BoolArgumentType;
 import dev.aknologia.konsole.niflheim.context.CommandContext;
 import dev.aknologia.konsole.niflheim.exceptions.CommandSyntaxException;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.network.ClientConnection;
+import net.minecraft.server.integrated.IntegratedServer;
+import net.minecraft.text.LiteralText;
+import net.minecraft.util.Formatting;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class AdvancedTooltipsCommand implements Command {
-    public String name = "advanced_tooltips";
-    public String description = "Show/Hide advanced tooltips.";
+public class TPSCommand implements Command {
+    public String name = "tps";
+    public String description = "Show the server's ticks per second. (Singleplayer Only)";
     public List<Argument> arguments = new ArrayList<>();
 
     @Override
     public void register(CommandDispatcher dispatcher) {
-        arguments.add(new Argument("value", BoolArgumentType.bool()));
         dispatcher.register(this);
     }
 
     @Override
     public int run(CommandContext context) throws CommandSyntaxException {
-        KonsoleClient.CLIENT.options.advancedItemTooltips = BoolArgumentType.getBool(context, "value");
+        IntegratedServer server = MinecraftClient.getInstance().getServer();
+        ClientConnection clientConnection = MinecraftClient.getInstance().getNetworkHandler().getConnection();
+        if(server == null) {
+            KonsoleClient.KONSOLE.addMessage(new LiteralText("This command is only available in singleplayer.").formatted(Formatting.RED));
+            return 1;
+        }
+        KonsoleClient.KONSOLE.addMessage(new LiteralText(String.format("\u00A76\u00A7nTicks:\u00A7r \u00A7b%s\u00A7rms per tick \u00A77(%s total ticks)\n\u00A76\u00A7nPackets Average:\u00A7r \u00A7b%s\u00A7r sent, \u00A7b%s\u00A7r received", server.getTicks(), clientConnection.getAveragePacketsSent(), clientConnection.getAveragePacketsReceived())));
         return 1;
     }
 

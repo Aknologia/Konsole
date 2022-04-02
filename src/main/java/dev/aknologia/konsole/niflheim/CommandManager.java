@@ -2,7 +2,7 @@ package dev.aknologia.konsole.niflheim;
 
 import dev.aknologia.konsole.KonsoleClient;
 import dev.aknologia.konsole.command.*;
-import dev.aknologia.konsole.convar.GammaConVar;
+import dev.aknologia.konsole.convar.*;
 import dev.aknologia.konsole.niflheim.CommandDispatcher;
 import dev.aknologia.konsole.niflheim.ParseResults;
 import dev.aknologia.konsole.niflheim.arguments.Argument;
@@ -132,18 +132,20 @@ public class CommandManager {
         new DimensionCommand().register(this.dispatcher);
         new PosCommand().register(this.dispatcher);
 
-        new HideHUDCommand().register(this.dispatcher);
         new RefreshCommand().register(this.dispatcher);
-        new HitboxCommand().register(this.dispatcher);
-        new ChunkBorderCommand().register(this.dispatcher);
-        new AdvancedTooltipsCommand().register(this.dispatcher);
 
         new NearCommand().register(this.dispatcher);
         new PlayersCommand().register(this.dispatcher);
+
+        new TPSCommand().register(this.dispatcher);
 
         new ActionCommands().register(this.dispatcher);
 
         /* REGISTER CONVARS */
         new GammaConVar().register(this.dispatcher);
+        new AdvancedTooltipsConVar().register(this.dispatcher);
+        new ChunkBorderConVar().register(this.dispatcher);
+        new HitboxConVar().register(this.dispatcher);
+        new HUDHiddenConVar().register(this.dispatcher);
     }
 }
