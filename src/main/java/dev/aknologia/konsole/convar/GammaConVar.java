@@ -9,6 +9,11 @@ public class GammaConVar extends ConsoleVariable<Double> {
     }
 
     @Override
+    public Object[] getArgumentParams() {
+        return new Object[]{0}; // Set minimum to 0.
+    }
+
+    @Override
     public Double get() {
         return MinecraftClient.getInstance().options.gamma;
     }

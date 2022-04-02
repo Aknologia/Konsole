@@ -12,8 +12,6 @@ public class ConsoleVariable<T> {
     private Class<T> type;
     private T value;
 
-    private Object[] argumentParams = {};
-
     private Function callback;
 
     public ConsoleVariable(String name, T defaultValue, Class<T> type) {
@@ -55,7 +53,7 @@ public class ConsoleVariable<T> {
         return this.description;
     }
 
-    public Object[] getArgumentParams() { return this.argumentParams; }
+    public Object[] getArgumentParams() { return new Object[]{}; }
 
     public ConVarType getType() {
         return ConVarType.getEnumFromType(this.type);
