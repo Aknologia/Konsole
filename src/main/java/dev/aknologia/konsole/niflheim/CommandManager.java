@@ -139,6 +139,7 @@ public class CommandManager {
         new AdvancedTooltipsCommand().register(this.dispatcher);
 
         new NearCommand().register(this.dispatcher);
+        new PlayersCommand().register(this.dispatcher);
 
         new ActionCommands().register(this.dispatcher);
 
