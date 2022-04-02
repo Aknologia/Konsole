@@ -113,7 +113,10 @@ public abstract class MinecraftClientMixin implements MinecraftClientMixinInterf
         this.doItemPick();
     }
 
-    /**@author*/
+    /**
+     * @author
+     * @reason
+     * */ // For the sake of gradle warnings
     // Bullshit overwriting (That's a very bad solution, need to fix later)
     @Overwrite
     public void tick() {

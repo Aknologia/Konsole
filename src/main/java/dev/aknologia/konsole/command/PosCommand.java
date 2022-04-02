@@ -65,7 +65,7 @@ public class PosCommand implements Command {
 
         Entity entity = KonsoleClient.CLIENT.getCameraEntity();
         HitResult blockHit = entity.raycast(20.0, 0.0f, false);
-        HitResult fluitHit = entity.raycast(20.0, 0.0f, true);
+        HitResult fluidHit = entity.raycast(20.0, 0.0f, true);
 
         BlockPos blockPos = entity.getBlockPos();
         Direction direction = entity.getHorizontalFacing();
@@ -104,8 +104,8 @@ public class PosCommand implements Command {
         }
 
 
-        if(fluitHit.getType() == HitResult.Type.BLOCK) {
-            blockPos = ((BlockHitResult)fluitHit).getBlockPos();
+        if(fluidHit.getType() == HitResult.Type.BLOCK) {
+            blockPos = ((BlockHitResult)fluidHit).getBlockPos();
             FluidState fluidState = world.getFluidState((BlockPos) blockPos);
             lines.add(String.format("\u00A7nTargeted Fluid:\u00A7r %s, %s, %s", blockPos.getX(), blockPos.getY(), blockPos.getZ()));
             lines.add(String.format("    \u00A77-\u00A7r %s", String.valueOf(Registry.FLUID.getId(((FluidState)fluidState).getFluid()))));
