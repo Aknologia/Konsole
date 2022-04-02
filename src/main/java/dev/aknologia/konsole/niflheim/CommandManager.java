@@ -138,6 +138,7 @@ public class CommandManager {
         new PlayersCommand().register(this.dispatcher);
 
         new TPSCommand().register(this.dispatcher);
+        new PingCommand().register(this.dispatcher);
 
         new ActionCommands().register(this.dispatcher);
 

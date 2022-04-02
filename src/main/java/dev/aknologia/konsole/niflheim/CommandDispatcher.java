@@ -82,6 +82,8 @@ public class CommandDispatcher {
                 throw ex;
             } catch(IllegalArgumentException ex) {
                 KonsoleClient.COMMAND_MANAGER.sendError(new LiteralText("Missing required argument"));
+            } catch(Exception ex) {
+                KonsoleClient.LOG.warn("Got error while running command: %s", ex);
             }
         } else {
             consumer.onCommandComplete(context, false, 0);
