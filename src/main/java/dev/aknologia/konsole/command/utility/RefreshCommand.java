@@ -1,36 +1,32 @@
-package dev.aknologia.konsole.niflheim;
+package dev.aknologia.konsole.command.utility;
 
+import dev.aknologia.konsole.KonsoleClient;
+import dev.aknologia.konsole.command.UtilityCategory;
+import dev.aknologia.konsole.niflheim.Category;
+import dev.aknologia.konsole.niflheim.Command;
 import dev.aknologia.konsole.niflheim.arguments.Argument;
 import dev.aknologia.konsole.niflheim.context.CommandContext;
 import dev.aknologia.konsole.niflheim.exceptions.CommandSyntaxException;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Function;
 
-public class DynamicCommand implements Command {
-    public String name;
-    public String description;
-    public Class<?> category;
-    public List<Argument> arguments;
-
-    private Function callback;
-
-    public DynamicCommand(String name, String description, Class<?> category, List<Argument> arguments, Function callback) {
-        this.name = name;
-        this.description = description;
-        this.category = category;
-        this.arguments = arguments;
-        this.callback = callback;
-    }
+public class RefreshCommand implements Command {
+    public String name = "refresh";
+    public String description = "Refresh Chunks around you.";
+    public Class<?> category = UtilityCategory.class;
+    public List<Argument> arguments = new ArrayList<>();
 
     @Override
     public int run(CommandContext context) throws CommandSyntaxException {
-        return (int) this.callback.apply(context);
+        KonsoleClient.CLIENT.worldRenderer.reload();
+        return 1;
     }
 
     @Override
-    public List<Argument> getArguments() { return this.arguments; }
+    public List<Argument> getArguments() {
+        return this.arguments;
+    }
 
     @Override
     public void setArguments(List<Argument> arguments) {

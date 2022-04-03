@@ -1,31 +1,28 @@
-package dev.aknologia.konsole.command;
+package dev.aknologia.konsole.command.info;
 
 import dev.aknologia.konsole.KonsoleClient;
+import dev.aknologia.konsole.command.InfoCategory;
+import dev.aknologia.konsole.niflheim.Category;
 import dev.aknologia.konsole.niflheim.Command;
-import dev.aknologia.konsole.niflheim.CommandDispatcher;
 import dev.aknologia.konsole.niflheim.arguments.Argument;
 import dev.aknologia.konsole.niflheim.context.CommandContext;
 import dev.aknologia.konsole.niflheim.exceptions.CommandSyntaxException;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.state.property.Property;
 import net.minecraft.text.LiteralText;
 import net.minecraft.util.Formatting;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
-import net.minecraft.world.border.WorldBorder;
 
 import java.util.*;
 import java.util.stream.Stream;
@@ -33,12 +30,8 @@ import java.util.stream.Stream;
 public class PosCommand implements Command {
     public String name = "pos";
     public String description = "Show informations about the current position.";
+    public Class<?> category = InfoCategory.class;
     public List<Argument> arguments = new ArrayList<>();
-
-    @Override
-    public void register(CommandDispatcher dispatcher) {
-        dispatcher.register(this);
-    }
 
     private double round2dec(double number) {
         return Math.round(number * 100.0) / 100.0;
@@ -161,4 +154,7 @@ public class PosCommand implements Command {
     public void setDescription(String description) {
         this.description = description;
     }
+
+    @Override
+    public Class<Category> getCategory() { return (Class<Category>) this.category; }
 }

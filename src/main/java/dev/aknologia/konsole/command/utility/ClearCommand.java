@@ -1,29 +1,25 @@
-package dev.aknologia.konsole.command;
+package dev.aknologia.konsole.command.utility;
 
 import dev.aknologia.konsole.KonsoleClient;
+import dev.aknologia.konsole.command.UtilityCategory;
+import dev.aknologia.konsole.niflheim.Category;
 import dev.aknologia.konsole.niflheim.Command;
-import dev.aknologia.konsole.niflheim.CommandDispatcher;
 import dev.aknologia.konsole.niflheim.arguments.Argument;
-import dev.aknologia.konsole.niflheim.arguments.StringArgumentType;
 import dev.aknologia.konsole.niflheim.context.CommandContext;
 import dev.aknologia.konsole.niflheim.exceptions.CommandSyntaxException;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class QuitCommand implements Command {
-    public String name = "quit";
-    public String description = "Close your client.";
+public class ClearCommand implements Command {
+    public String name = "clear";
+    public String description = "Clear the console.";
+    public Class<?> category = UtilityCategory.class;
     public List<Argument> arguments = new ArrayList<>();
 
     @Override
-    public void register(CommandDispatcher dispatcher) {
-        dispatcher.register(this);
-    }
-
-    @Override
     public int run(CommandContext context) throws CommandSyntaxException {
-        KonsoleClient.CLIENT.stop();
+        KonsoleClient.KONSOLE.clear(false);
         return 1;
     }
 
@@ -56,4 +52,7 @@ public class QuitCommand implements Command {
     public void setDescription(String description) {
         this.description = description;
     }
+
+    @Override
+    public Class<Category> getCategory() { return (Class<Category>) this.category; }
 }

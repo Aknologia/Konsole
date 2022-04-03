@@ -1,10 +1,11 @@
-package dev.aknologia.konsole.command;
+package dev.aknologia.konsole.command.info;
 
 import com.google.common.collect.ComparisonChain;
 import com.google.common.collect.Ordering;
 import dev.aknologia.konsole.KonsoleClient;
+import dev.aknologia.konsole.command.InfoCategory;
+import dev.aknologia.konsole.niflheim.Category;
 import dev.aknologia.konsole.niflheim.Command;
-import dev.aknologia.konsole.niflheim.CommandDispatcher;
 import dev.aknologia.konsole.niflheim.arguments.Argument;
 import dev.aknologia.konsole.niflheim.context.CommandContext;
 import dev.aknologia.konsole.niflheim.exceptions.CommandSyntaxException;
@@ -24,14 +25,10 @@ import java.util.List;
 public class PlayersCommand implements Command {
     public String name = "players";
     public String description = "Show the list the connected players and their ping.";
+    public Class<?> category = InfoCategory.class;
     public List<Argument> arguments = new ArrayList<>();
 
     private final Ordering<PlayerListEntry> ENTRY_ORDERING = Ordering.from(new EntryOrderComparator());
-
-    @Override
-    public void register(CommandDispatcher dispatcher) {
-        dispatcher.register(this);
-    }
 
     @Override
     public int run(CommandContext context) throws CommandSyntaxException {
@@ -85,4 +82,7 @@ public class PlayersCommand implements Command {
             return ComparisonChain.start().compareTrueFirst(playerListEntry.getGameMode() != GameMode.SPECTATOR, playerListEntry2.getGameMode() != GameMode.SPECTATOR).compare(team != null ? team.getName() : "", team2 != null ? team2.getName() : "").compare(playerListEntry.getProfile().getName(), playerListEntry2.getProfile().getName(), String::compareToIgnoreCase).result();
         }
     }
+
+    @Override
+    public Class<Category> getCategory() { return (Class<Category>) this.category; }
 }

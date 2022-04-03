@@ -1,8 +1,9 @@
-package dev.aknologia.konsole.command;
+package dev.aknologia.konsole.command.info;
 
 import dev.aknologia.konsole.KonsoleClient;
+import dev.aknologia.konsole.command.InfoCategory;
+import dev.aknologia.konsole.niflheim.Category;
 import dev.aknologia.konsole.niflheim.Command;
-import dev.aknologia.konsole.niflheim.CommandDispatcher;
 import dev.aknologia.konsole.niflheim.arguments.Argument;
 import dev.aknologia.konsole.niflheim.context.CommandContext;
 import dev.aknologia.konsole.niflheim.exceptions.CommandSyntaxException;
@@ -11,21 +12,14 @@ import net.minecraft.text.LiteralText;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.border.WorldBorder;
 
-import java.time.Duration;
-import java.time.Period;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 public class WorldCommand implements Command {
     public String name = "world";
     public String description = "Show informations about the current world.";
+    public Class<?> category = InfoCategory.class;
     public List<Argument> arguments = new ArrayList<>();
-
-    @Override
-    public void register(CommandDispatcher dispatcher) {
-        dispatcher.register(this);
-    }
 
     private String formatTickTime(long time) {
         long sec = Math.round(time/2.4e4*86400);
@@ -105,4 +99,7 @@ public class WorldCommand implements Command {
     public void setDescription(String description) {
         this.description = description;
     }
+
+    @Override
+    public Class<Category> getCategory() { return (Class<Category>) this.category; }
 }

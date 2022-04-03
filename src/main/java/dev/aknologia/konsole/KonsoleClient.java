@@ -4,7 +4,6 @@ import dev.aknologia.konsole.niflheim.CommandManager;
 import dev.aknologia.konsole.console.Konsole;
 import dev.aknologia.konsole.console.KonsoleScreen;
 import dev.aknologia.konsole.input.KeyManager;
-import dev.aknologia.konsole.niflheim.arguments.types.Settings;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.metadata.ModMetadata;
@@ -27,7 +26,6 @@ public class KonsoleClient implements ClientModInitializer {
     public static CommandManager COMMAND_MANAGER;
     public static Konsole KONSOLE;
     public static KonsoleScreen SCREEN_INSTANCE;
-    public static Settings SETTINGS;
 
     public static HashMap<Integer, String> BINDS;
     public static HashMap<String, String> ALIASES;
@@ -37,7 +35,6 @@ public class KonsoleClient implements ClientModInitializer {
         if(!FabricLoader.getInstance().isModLoaded(MODID)) return;
         LOG.info("Initializing %s v%s", META.getName(), META.getVersion());
 
-        SETTINGS = new Settings();
         CLIENT = MinecraftClient.getInstance();
         KONSOLE = new Konsole(CLIENT);
         SCREEN_INSTANCE = new KonsoleScreen("", CLIENT);

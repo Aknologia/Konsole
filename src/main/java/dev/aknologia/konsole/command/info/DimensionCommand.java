@@ -1,17 +1,16 @@
-package dev.aknologia.konsole.command;
+package dev.aknologia.konsole.command.info;
 
 import dev.aknologia.konsole.KonsoleClient;
+import dev.aknologia.konsole.command.InfoCategory;
+import dev.aknologia.konsole.niflheim.Category;
 import dev.aknologia.konsole.niflheim.Command;
-import dev.aknologia.konsole.niflheim.CommandDispatcher;
 import dev.aknologia.konsole.niflheim.arguments.Argument;
 import dev.aknologia.konsole.niflheim.context.CommandContext;
 import dev.aknologia.konsole.niflheim.exceptions.CommandSyntaxException;
 import net.minecraft.client.render.DimensionEffects;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.text.LiteralText;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
-import net.minecraft.world.border.WorldBorder;
 import net.minecraft.world.dimension.DimensionType;
 
 import java.util.ArrayList;
@@ -20,27 +19,9 @@ import java.util.List;
 
 public class DimensionCommand implements Command {
     public String name = "dimension";
-    public String description = "Show informations about the current dimension.";
+    public String description = "Show information about the current dimension.";
+    public Class<?> category = InfoCategory.class;
     public List<Argument> arguments = new ArrayList<>();
-
-    @Override
-    public void register(CommandDispatcher dispatcher) {
-        dispatcher.register(this);
-    }
-
-    private String formatTickTime(long time) {
-        long sec = Math.round(time/2.4e4*86400);
-        int days = MathHelper.floor(sec / 86400);
-        int hours = MathHelper.floor((sec - days * 86400) / 3600);
-        int minutes = MathHelper.floor((sec - days * 86400 - hours * 3600) / 60);
-        String result = null;
-        if(days < 1 && hours < 1) result = String.format("%sm", minutes);
-        else {
-            if(days < 1) result = String.format("%sh%sm", hours, minutes);
-            else String.format("%sd%sh%sm", days, hours, minutes);
-        }
-        return result;
-    }
 
     @Override
     public int run(CommandContext context) throws CommandSyntaxException {
@@ -113,4 +94,7 @@ public class DimensionCommand implements Command {
     public void setDescription(String description) {
         this.description = description;
     }
+
+    @Override
+    public Class<Category> getCategory() { return (Class<Category>) this.category; }
 }

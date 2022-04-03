@@ -26,22 +26,28 @@ public class CommandDispatcher {
     private static final String USAGE_REQUIRED_CLOSE = ">";
     private static final String USAGE_OR = "|";
 
-    private HashMap<String, Command> commands = new HashMap<>();
+    private List<Category> categories = new ArrayList<>();
     private HashMap<String, ConsoleVariable<?>> convars = new HashMap<>();
 
     private ResultConsumer consumer = (c, s, r) -> {
     };
 
-    public HashMap<String, Command> getCommands() { return this.commands; }
+    public HashMap<String, Command> getCommands() {
+        HashMap<String, Command> commands = new HashMap<>();
+        this.categories.forEach(category -> {
+            category.getCommands().forEach(command -> commands.put(command.getName(), command));
+        });
+        return commands;
+    }
     public Command getCommand(String name) {
-        return this.commands.get(name);
+        return this.getCommands().get(name);
     }
     public ConsoleVariable<?> getConVar(String name) { return this.convars.get(name); }
 
-    public void register(Command command) {
-        if(this.commands.keySet().contains(command.getName())) throw new IllegalArgumentException("Command '" + command.getName() + "' already defined.");
-        this.commands.put(command.getName(), command);
+    public void register(Category category) {
+        this.categories.add(category);
     }
+
     public void register(ConsoleVariable<?> convar) {
         if(this.convars.keySet().contains(convar.getName())) throw new IllegalArgumentException("ConVar '" + convar.getName() + "' already defined.");
         this.convars.put(convar.getName(), convar);
@@ -80,7 +86,7 @@ public class CommandDispatcher {
             } catch(final CommandSyntaxException ex) {
                 consumer.onCommandComplete(context, false, 0);
                 throw ex;
-            } catch(IllegalArgumentException ex) {
+            } catch(final IllegalArgumentException ex) {
                 KonsoleClient.COMMAND_MANAGER.sendError(new LiteralText("Missing required argument"));
             } catch(Exception ex) {
                 KonsoleClient.LOG.warn("Got error while running command: %s", ex);
@@ -107,7 +113,7 @@ public class CommandDispatcher {
 
         final String commandName = originalReader.readUnquotedString();
 
-        Command command = this.commands.get(commandName);
+        Command command = this.getCommand(commandName);
         ConsoleVariable<?> convar;
         if(command == null) {
             convar = this.convars.get(commandName);
@@ -198,7 +204,7 @@ public class CommandDispatcher {
     public Suggestions getCommandCompletionSuggestions(String truncatedInputLowerCase, int cursor) {
         StringRange range = new StringRange(0, cursor);
         List<Suggestion> suggestions = new ArrayList<>();
-        List<String> commands = new ArrayList<>(KonsoleClient.COMMAND_MANAGER.getDispatcher().commands.keySet());
+        List<String> commands = new ArrayList<>(KonsoleClient.COMMAND_MANAGER.getDispatcher().getCommands().keySet());
         commands.addAll(new ArrayList<>(KonsoleClient.COMMAND_MANAGER.getDispatcher().convars.keySet()));
         List<Suggestion> list2 = new ArrayList<>();
         Iterator<String> iterator = commands.iterator();

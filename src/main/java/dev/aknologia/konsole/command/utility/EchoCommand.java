@@ -1,31 +1,27 @@
-package dev.aknologia.konsole.command;
+package dev.aknologia.konsole.command.utility;
 
 import dev.aknologia.konsole.KonsoleClient;
+import dev.aknologia.konsole.command.UtilityCategory;
+import dev.aknologia.konsole.niflheim.Category;
 import dev.aknologia.konsole.niflheim.Command;
-import dev.aknologia.konsole.niflheim.CommandDispatcher;
 import dev.aknologia.konsole.niflheim.arguments.Argument;
 import dev.aknologia.konsole.niflheim.arguments.StringArgumentType;
 import dev.aknologia.konsole.niflheim.context.CommandContext;
 import dev.aknologia.konsole.niflheim.exceptions.CommandSyntaxException;
+import net.minecraft.text.LiteralText;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import java.util.function.Function;
 
-public class SayCommand implements Command {
-    public String name = "say";
-    public String description = "Send a message in the chat.";
-    public List<Argument> arguments = new ArrayList<>();
-
-    @Override
-    public void register(CommandDispatcher dispatcher) {
-        arguments.add(new Argument("message", StringArgumentType.greedyString(), true));
-        dispatcher.register(this);
-    }
+public class EchoCommand implements Command {
+    public String name = "echo";
+    public String description = "Send a message in the console.";
+    public Class<?> category = UtilityCategory.class;
+    public List<Argument> arguments = Arrays.asList(new Argument("message", StringArgumentType.greedyString(), true));
 
     @Override
     public int run(CommandContext context) throws CommandSyntaxException {
-        KonsoleClient.CLIENT.player.sendChatMessage(context.getArgument("message", String.class));
+        KonsoleClient.KONSOLE.addMessage(new LiteralText(context.getArgument("message", String.class)));
         return 1;
     }
 
@@ -58,4 +54,7 @@ public class SayCommand implements Command {
     public void setDescription(String description) {
         this.description = description;
     }
+
+    @Override
+    public Class<Category> getCategory() { return (Class<Category>) this.category; }
 }

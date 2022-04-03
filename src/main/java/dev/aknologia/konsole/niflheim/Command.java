@@ -13,19 +13,19 @@ import java.util.function.Function;
 public interface Command {
     int SINGLE_SUCCESS = 1;
 
-    void register(CommandDispatcher dispatcher);
-
     int run(CommandContext context) throws CommandSyntaxException;
 
-    public List<Argument> getArguments();
+    List<Argument> getArguments();
 
     void setArguments(List<Argument> arguments);
 
-    public String getName();
+    String getName();
 
     void setName(String name);
 
-    public String getDescription();
+    String getDescription();
 
     void setDescription(String description);
+
+    Class<Category> getCategory();
 }

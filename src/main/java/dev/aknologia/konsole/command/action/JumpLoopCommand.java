@@ -1,34 +1,41 @@
-package dev.aknologia.konsole.command;
+package dev.aknologia.konsole.command.action;
 
-import dev.aknologia.konsole.KonsoleClient;
+import dev.aknologia.konsole.command.ActionCategory;
+import dev.aknologia.konsole.niflheim.Category;
 import dev.aknologia.konsole.niflheim.Command;
-import dev.aknologia.konsole.niflheim.CommandDispatcher;
 import dev.aknologia.konsole.niflheim.arguments.Argument;
-import dev.aknologia.konsole.niflheim.arguments.StringArgumentType;
 import dev.aknologia.konsole.niflheim.context.CommandContext;
 import dev.aknologia.konsole.niflheim.exceptions.CommandSyntaxException;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.network.ClientPlayNetworkHandler;
-import net.minecraft.text.LiteralText;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
-public class PingCommand implements Command {
-    public String name = "ping";
-    public String description = "Show your current latency.";
+public class JumpLoopCommand implements Command {
+    public String name = "*jump";
+    public String description = "Jump continuously.";
+    public Class<?> category = ActionCategory.class;
     public List<Argument> arguments = new ArrayList<>();
 
-    @Override
-    public void register(CommandDispatcher dispatcher) {
-        dispatcher.register(this);
-    }
+    private boolean enabled = false;
 
     @Override
     public int run(CommandContext context) throws CommandSyntaxException {
-        ClientPlayNetworkHandler clientPlayNetworkHandler = MinecraftClient.getInstance().getNetworkHandler();
-        KonsoleClient.KONSOLE.addMessage(new LiteralText(String.format("\u00A76\u00A7nLatency:\u00A7r %sms", clientPlayNetworkHandler.getPlayerListEntry(MinecraftClient.getInstance().player.getUuid()).getLatency())));
+        this.enabled = !this.enabled;
+        if(this.enabled) this.trigger();
         return 1;
+    }
+
+    private void trigger() {
+        JumpLoopCommand instance = this;
+        Timer t = new Timer();
+        TimerTask task = new TimerTask() {
+            @Override
+            public void run() {
+                if(!instance.enabled) t.cancel();
+                else if(MinecraftClient.getInstance().player.isOnGround()) MinecraftClient.getInstance().player.jump();
+            }
+        };
+        t.scheduleAtFixedRate(task, new Date(), 50);
     }
 
     @Override
@@ -60,4 +67,7 @@ public class PingCommand implements Command {
     public void setDescription(String description) {
         this.description = description;
     }
+
+    @Override
+    public Class<Category> getCategory() { return (Class<Category>) this.category; }
 }

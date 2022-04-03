@@ -1,6 +1,8 @@
-package dev.aknologia.konsole.command;
+package dev.aknologia.konsole.command.utility;
 
 import dev.aknologia.konsole.KonsoleClient;
+import dev.aknologia.konsole.command.UtilityCategory;
+import dev.aknologia.konsole.niflheim.Category;
 import dev.aknologia.konsole.niflheim.Command;
 import dev.aknologia.konsole.niflheim.CommandDispatcher;
 import dev.aknologia.konsole.niflheim.arguments.Argument;
@@ -15,15 +17,12 @@ import java.util.*;
 public class HelpCommand implements Command {
     public String name = "help";
     public String description = "Shows this help message.";
-    public List<Argument> arguments = new ArrayList<>();
+    public Class<?> category = UtilityCategory.class;
+    public List<Argument> arguments = Arrays.asList(
+            new Argument("command|page", StringArgumentType.word(), false)
+    );
 
     private int commandsPerPage = 8;
-
-    @Override
-    public void register(CommandDispatcher dispatcher) {
-        arguments.add(new Argument("command|page", StringArgumentType.word(), false));
-        dispatcher.register(this);
-    }
 
     @Override
     public int run(CommandContext context) throws CommandSyntaxException {
@@ -112,4 +111,7 @@ public class HelpCommand implements Command {
     public void setDescription(String description) {
         this.description = description;
     }
+
+    @Override
+    public Class<Category> getCategory() { return (Class<Category>) this.category; }
 }

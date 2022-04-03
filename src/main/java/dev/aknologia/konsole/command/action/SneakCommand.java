@@ -1,31 +1,25 @@
-package dev.aknologia.konsole.command;
+package dev.aknologia.konsole.command.action;
 
-import dev.aknologia.konsole.KonsoleClient;
+import dev.aknologia.konsole.command.ActionCategory;
+import dev.aknologia.konsole.niflheim.Category;
 import dev.aknologia.konsole.niflheim.Command;
-import dev.aknologia.konsole.niflheim.CommandDispatcher;
 import dev.aknologia.konsole.niflheim.arguments.Argument;
-import dev.aknologia.konsole.niflheim.arguments.StringArgumentType;
 import dev.aknologia.konsole.niflheim.context.CommandContext;
 import dev.aknologia.konsole.niflheim.exceptions.CommandSyntaxException;
-import net.minecraft.text.LiteralText;
+import net.minecraft.client.MinecraftClient;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class EchoCommand implements Command {
-    public String name = "echo";
-    public String description = "Send a message in the console.";
+public class SneakCommand implements Command {
+    public String name = "+sneak";
+    public String description = "Toggle sneaking.";
+    public Class<?> category = ActionCategory.class;
     public List<Argument> arguments = new ArrayList<>();
 
     @Override
-    public void register(CommandDispatcher dispatcher) {
-        arguments.add(new Argument("message", StringArgumentType.greedyString(), true));
-        dispatcher.register(this);
-    }
-
-    @Override
     public int run(CommandContext context) throws CommandSyntaxException {
-        KonsoleClient.KONSOLE.addMessage(new LiteralText(context.getArgument("message", String.class)));
+        MinecraftClient.getInstance().player.setSneaking(!MinecraftClient.getInstance().player.isSneaking());
         return 1;
     }
 
@@ -58,4 +52,7 @@ public class EchoCommand implements Command {
     public void setDescription(String description) {
         this.description = description;
     }
+
+    @Override
+    public Class<Category> getCategory() { return (Class<Category>) this.category; }
 }

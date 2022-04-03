@@ -1,8 +1,9 @@
-package dev.aknologia.konsole.command;
+package dev.aknologia.konsole.command.info;
 
 import dev.aknologia.konsole.KonsoleClient;
+import dev.aknologia.konsole.command.InfoCategory;
+import dev.aknologia.konsole.niflheim.Category;
 import dev.aknologia.konsole.niflheim.Command;
-import dev.aknologia.konsole.niflheim.CommandDispatcher;
 import dev.aknologia.konsole.niflheim.arguments.Argument;
 import dev.aknologia.konsole.niflheim.arguments.IntegerArgumentType;
 import dev.aknologia.konsole.niflheim.context.CommandContext;
@@ -14,20 +15,17 @@ import net.minecraft.text.LiteralText;
 import net.minecraft.util.math.Box;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 
 public class NearCommand implements Command {
     public String name = "near";
     public String description = "Show all living entities in the specified radius (default: 50).";
-    public List<Argument> arguments = new ArrayList<>();
-
-    @Override
-    public void register(CommandDispatcher dispatcher) {
-        arguments.add(new Argument("box_radius", IntegerArgumentType.integer(1, 300)));
-        dispatcher.register(this);
-    }
+    public Class<?> category = InfoCategory.class;
+    public List<Argument> arguments = Arrays.asList(
+            new Argument("box_radius", IntegerArgumentType.integer(1, 300))
+    );
 
     @Override
     public int run(CommandContext context) throws CommandSyntaxException {
@@ -99,4 +97,7 @@ public class NearCommand implements Command {
     public void setDescription(String description) {
         this.description = description;
     }
+
+    @Override
+    public Class<Category> getCategory() { return (Class<Category>) this.category; }
 }

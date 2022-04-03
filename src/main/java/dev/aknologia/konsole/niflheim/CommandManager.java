@@ -3,8 +3,6 @@ package dev.aknologia.konsole.niflheim;
 import dev.aknologia.konsole.KonsoleClient;
 import dev.aknologia.konsole.command.*;
 import dev.aknologia.konsole.convar.*;
-import dev.aknologia.konsole.niflheim.CommandDispatcher;
-import dev.aknologia.konsole.niflheim.ParseResults;
 import dev.aknologia.konsole.niflheim.arguments.Argument;
 import dev.aknologia.konsole.niflheim.context.CommandContext;
 import dev.aknologia.konsole.niflheim.exceptions.CommandSyntaxException;
@@ -14,7 +12,6 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Util;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -107,40 +104,18 @@ public class CommandManager {
         List<Argument> arguments = new ArrayList<>();
         arguments.add(new Argument("value", convar.getType().getArgument(convar.getArgumentParams())));
 
-        return new DynamicCommand(convar.getName(), convar.getDescription(), arguments, callback);
+        return new DynamicCommand(convar.getName(), convar.getDescription(), UtilityCategory.class, arguments, callback);
     }
 
     private void registerAll() {
-        /* REGISTER COMMANDS */
-        new HelpCommand().register(this.dispatcher);
-        new SettingsCommand().register(this.dispatcher);
+        /* REGISTER CATEGORIES */
+        List<Category> categories = Arrays.asList(
+                new ActionCategory(),
+                new InfoCategory(),
+                new UtilityCategory()
+        );
 
-        new EchoCommand().register(this.dispatcher);
-        new ClearCommand().register(this.dispatcher);
-
-        new DisconnectCommand().register(this.dispatcher);
-        new QuitCommand().register(this.dispatcher);
-
-        new BindCommand().register(this.dispatcher);
-        new UnbindCommand().register(this.dispatcher);
-        new UnbindAllCommand().register(this.dispatcher);
-        new ListBindCommand().register(this.dispatcher);
-
-        new SayCommand().register(this.dispatcher);
-
-        new WorldCommand().register(this.dispatcher);
-        new DimensionCommand().register(this.dispatcher);
-        new PosCommand().register(this.dispatcher);
-
-        new RefreshCommand().register(this.dispatcher);
-
-        new NearCommand().register(this.dispatcher);
-        new PlayersCommand().register(this.dispatcher);
-
-        new TPSCommand().register(this.dispatcher);
-        new PingCommand().register(this.dispatcher);
-
-        new ActionCommands().register(this.dispatcher);
+        categories.forEach(this.dispatcher::register);
 
         /* REGISTER CONVARS */
         new GammaConVar().register(this.dispatcher);

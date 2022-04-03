@@ -1,8 +1,9 @@
-package dev.aknologia.konsole.command;
+package dev.aknologia.konsole.command.info;
 
 import dev.aknologia.konsole.KonsoleClient;
+import dev.aknologia.konsole.command.InfoCategory;
+import dev.aknologia.konsole.niflheim.Category;
 import dev.aknologia.konsole.niflheim.Command;
-import dev.aknologia.konsole.niflheim.CommandDispatcher;
 import dev.aknologia.konsole.niflheim.arguments.Argument;
 import dev.aknologia.konsole.niflheim.context.CommandContext;
 import dev.aknologia.konsole.niflheim.exceptions.CommandSyntaxException;
@@ -18,12 +19,8 @@ import java.util.List;
 public class TPSCommand implements Command {
     public String name = "tps";
     public String description = "Show the server's ticks per second. (Singleplayer Only)";
+    public Class<?> category = InfoCategory.class;
     public List<Argument> arguments = new ArrayList<>();
-
-    @Override
-    public void register(CommandDispatcher dispatcher) {
-        dispatcher.register(this);
-    }
 
     @Override
     public int run(CommandContext context) throws CommandSyntaxException {
@@ -66,4 +63,7 @@ public class TPSCommand implements Command {
     public void setDescription(String description) {
         this.description = description;
     }
+
+    @Override
+    public Class<Category> getCategory() { return (Class<Category>) this.category; }
 }
