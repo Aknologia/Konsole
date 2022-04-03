@@ -95,7 +95,6 @@ public class CommandManager {
             try {
                 convar.set(convar.getArgumentValue(context));
             } catch(IllegalArgumentException error) {
-                System.out.println(error);
                 KonsoleClient.KONSOLE.addMessage(new LiteralText(convar.toString()));
             }
 

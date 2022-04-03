@@ -10,6 +10,7 @@ public class InfoCategory extends Category {
         super("Info",
                 Arrays.asList(
                         new DimensionCommand(),
+                        new DistanceCommand(),
                         new NearCommand(),
                         new PingCommand(),
                         new PlayersCommand(),
