@@ -439,6 +439,9 @@ public class KonsoleSuggestor {
             this.completed = true;
         }
 
-        public void discard() { KonsoleSuggestor.this.window = null; }
+        public void discard() {
+            KonsoleSuggestor.this.window = null;
+            KonsoleSuggestor.this.showUsages(Formatting.GRAY);
+        }
     }
 }

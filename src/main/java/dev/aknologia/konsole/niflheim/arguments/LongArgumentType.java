@@ -6,11 +6,12 @@ import dev.aknologia.konsole.niflheim.exceptions.CommandSyntaxException;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 public class LongArgumentType implements ArgumentType<Long> {
     private static final Collection<String> EXAMPLES = Arrays.asList("0", "123", "-123");
-    private static final List<String> SUGGESTIONS = Arrays.asList("0", "200", "-50", "300");
+    private static final List<String> SUGGESTIONS = Collections.emptyList();
 
     private final long minimum;
     private final long maximum;

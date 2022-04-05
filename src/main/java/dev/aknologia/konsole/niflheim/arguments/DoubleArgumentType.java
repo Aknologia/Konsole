@@ -6,11 +6,12 @@ import dev.aknologia.konsole.niflheim.exceptions.CommandSyntaxException;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 public class DoubleArgumentType implements ArgumentType<Double> {
     private static final Collection<String> EXAMPLES = Arrays.asList("0", "1.2", ".5", "-1", "-.5", "-1234.56");
-    private static final List<String> SUGGESTIONS = Arrays.asList("0", "1.0", "2", "3", "4", "5", "6.2");
+    private static final List<String> SUGGESTIONS = Collections.emptyList();
 
     private final double minimum;
     private final double maximum;

@@ -198,6 +198,7 @@ public class CommandDispatcher {
             } else list2.add(new Suggestion(range, key));
         }
         suggestions.addAll(list2);
+        System.out.println(range);
         return new Suggestions(range, suggestions);
     }
 

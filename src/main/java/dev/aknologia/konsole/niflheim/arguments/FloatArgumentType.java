@@ -6,11 +6,12 @@ import dev.aknologia.konsole.niflheim.exceptions.CommandSyntaxException;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 public class FloatArgumentType implements ArgumentType<Float> {
     private static final Collection<String> EXAMPLES = Arrays.asList("0", "1.2", ".5", "-1", "-.5", "-1234.56");
-    private static final List<String> SUGGESTIONS = Arrays.asList("0", "1.0", "2.5", "6.1", ".3");
+    private static final List<String> SUGGESTIONS = Collections.emptyList();
 
     private final float minimum;
     private final float maximum;

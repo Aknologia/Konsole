@@ -35,7 +35,7 @@ public class WhoIsCommand implements Command {
             Iterator<Property> iterator = propertiesCollection.iterator();
             while(iterator.hasNext()) {
                 Property property = iterator.next();
-                stringProperties.add(String.format("- %s:\u00A77 %s", property.getName(), property.getValue()));
+                stringProperties.add(String.format("- %s:\u00A77 %s", property.getName(), property.getValue().length() > 20 ? property.getValue().substring(0, 17) + "..." : property.getValue()));
             }
         });
 
@@ -53,7 +53,7 @@ public class WhoIsCommand implements Command {
 """,
                 player.getDisplayName() != null ? player.getDisplayName().getString() : player.getProfile().getName(),
                 player.getLatency(),
-                player.getHealth(),
+                player.getLastHealth(),
                 player.getGameMode().getName(),
                 player.getScoreboardTeam() != null ? "\n\u00A76\u00A7nTeam:\u00A7r " + player.getScoreboardTeam().getDisplayName().getString() : "",
                 player.getModel(),

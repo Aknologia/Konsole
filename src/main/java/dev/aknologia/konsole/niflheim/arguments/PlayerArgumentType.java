@@ -55,7 +55,7 @@ public class PlayerArgumentType implements ArgumentType<PlayerListEntry> {
     @Override
     public List<String> getSuggestions() {
         ClientPlayNetworkHandler clientPlayNetworkHandler = MinecraftClient.getInstance().getNetworkHandler();
-        List<PlayerListEntry> playerListEntries = (List<PlayerListEntry>) clientPlayNetworkHandler.getPlayerList();
+        List<PlayerListEntry> playerListEntries = clientPlayNetworkHandler.getPlayerList().stream().toList();
 
         List<String> playerNames = new ArrayList<>();
         playerListEntries.forEach(pl -> playerNames.add(pl.getProfile().getName()));

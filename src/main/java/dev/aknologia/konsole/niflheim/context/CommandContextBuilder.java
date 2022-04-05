@@ -61,23 +61,28 @@ public class CommandContextBuilder {
         Argument suggestedArg = null;
 
         StringReader reader = new StringReader(input);
+        try { // Ignore commands
+            reader.readString();
+        } catch(CommandSyntaxException ignored) {}
         int lastStart = Integer.MIN_VALUE;
 
         while (listIterator.hasNext()) {
+            reader.skipWhitespace();
             Argument arg = listIterator.next();
+            lastStart = reader.getCursor();
             try {
-                int st = reader.getCursor();
                 Object resultArg = arg.getArgumentType().parse(reader);
                 int end = reader.getCursor();
-                if(st >= cursor) {
+                if(end >= cursor) {
                     suggestedArg = listIterator.previous();
                     break;
                 }
-                lastStart = st;
             } catch(final CommandSyntaxException ex) {
-                continue;
+                suggestedArg = listIterator.previous();
+                break;
             }
         }
+        System.out.println(lastStart);
         return new SuggestionContext(this.command, suggestedArg, lastStart);
     }
 }
