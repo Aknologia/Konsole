@@ -6,6 +6,8 @@ import dev.aknologia.konsole.niflheim.Category;
 import dev.aknologia.konsole.niflheim.Command;
 import dev.aknologia.konsole.niflheim.CommandDispatcher;
 import dev.aknologia.konsole.niflheim.arguments.Argument;
+import dev.aknologia.konsole.niflheim.arguments.IntegerArgumentType;
+import dev.aknologia.konsole.niflheim.arguments.MultipleArgumentType;
 import dev.aknologia.konsole.niflheim.arguments.StringArgumentType;
 import dev.aknologia.konsole.niflheim.context.CommandContext;
 import dev.aknologia.konsole.niflheim.exceptions.CommandSyntaxException;
@@ -19,25 +21,30 @@ public class HelpCommand implements Command {
     public String description = "Shows this help message.";
     public Class<?> category = UtilityCategory.class;
     public List<Argument> arguments = Arrays.asList(
-            new Argument("command|page", StringArgumentType.word(), false)
+            new Argument(
+                    "command|page",
+                    MultipleArgumentType.multiple(
+                            new Argument[]
+                                {
+                                    new Argument("page", IntegerArgumentType.integer(0)),
+                                    new Argument("command", StringArgumentType.word())
+                                }
+                    )
+            )
     );
 
     private int commandsPerPage = 8;
 
     @Override
     public int run(CommandContext context) throws CommandSyntaxException {
-        String arg = null;
+        Object arg = null;
         try {
-            arg = StringArgumentType.getString(context, "command|page");
+            arg = MultipleArgumentType.getMultiple(context, "command|page");
         } catch(Exception ex) {}
         int page = 0;
-        if(arg != null && isNumber(arg)) {
-            int argInt = Integer.parseInt(arg) - 1;
-            if(argInt < 0) throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.integerTooLow().create(argInt + 1, 1);
-            else page = argInt;
-        }
-        if(arg != null && !isNumber(arg)) return this.showCommandInfo(context, arg);
-        return this.showPage(context, page);
+        if(arg == null) return this.showPage(context, page);
+        if(arg instanceof Integer) return this.showPage(context, (int) arg);
+        else return this.showCommandInfo(context, (String) arg);
     }
 
     private int showCommandInfo(CommandContext context, String name) throws CommandSyntaxException {
