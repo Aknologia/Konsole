@@ -5,4 +5,4 @@
   <p>Lorem Ipsum</p>
 </div>
 
-[![Build status](https://ci.appveyor.com/api/projects/status/84w90ytqto59xwl8?svg=true)](https://ci.appveyor.com/project/Aknologia/konsole)
+[![Java CI](https://github.com/Aknologia/Konsole/actions/workflows/gradle.yml/badge.svg)](https://github.com/Aknologia/Konsole/actions/workflows/gradle.yml)
