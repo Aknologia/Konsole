@@ -12,6 +12,9 @@ public class ActionCategory extends Category {
                     new AttackCommand(),
                     new AttackLoopCommand(),
                     new JumpCommand(),
+                    new JumpLoopCommand(),
+                    new PickCommand(),
+                    new PickLoopCommand(),
                     new SneakCommand(),
                     new UseCommand(),
                     new UseLoopCommand()

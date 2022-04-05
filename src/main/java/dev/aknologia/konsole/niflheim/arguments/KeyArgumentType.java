@@ -10,10 +10,7 @@ import dev.aknologia.konsole.niflheim.exceptions.CommandSyntaxException;
 import dev.aknologia.konsole.niflheim.exceptions.DynamicCommandExceptionType;
 import org.lwjgl.glfw.GLFW;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class KeyArgumentType implements ArgumentType<Keys.Key> {
     private static final Collection<String> EXAMPLES = Arrays.asList("K", "MOUSE1", "SHIFT");
@@ -45,8 +42,9 @@ public class KeyArgumentType implements ArgumentType<Keys.Key> {
 
     @Override
     public List<String> getSuggestions() {
-        Set<String> keys = KeyManager.KEYS.getKeyList().keySet();
-        keys.addAll(KeyManager.KEYS.getMouseList().keySet());
-        return keys.stream().toList();
+        List<String> keyList = new ArrayList<>();
+        keyList.addAll(KeyManager.KEYS.getKeyList().keySet().stream().toList());
+        keyList.addAll(KeyManager.KEYS.getMouseList().keySet().stream().toList());
+        return keyList;
     }
 }
