@@ -4,7 +4,10 @@
   <h1>Konsole 
     <a href="https://github.com/Aknologia/Konsole/actions/workflows/gradle.yml"><img src="https://github.com/Aknologia/Konsole/actions/workflows/gradle.yml/badge.svg" alt="Java CI"></img></a>
     <a href="https://github.com/Aknologia/Konsole/releases"><img src="https://img.shields.io/github/v/release/Aknologia/Konsole?include_prereleases"></img></a>
+    
   </h1>
   <p>Konsole is a Minecraft Clienside mod purely for debugging and utility made with FabricMC.</p>
   <h6>MIT © 2022 Aknologia</h6>
+  <img src="https://img.shields.io/badge/minecraft-1.18.2-yellowgreen"></img>
+  <img src="https://img.shields.io/badge/fabric%20loader-%5E0.13.3-fffca3"></img>
 </div>
