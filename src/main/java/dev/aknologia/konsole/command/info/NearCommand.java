@@ -15,7 +15,6 @@ import net.minecraft.text.LiteralText;
 import net.minecraft.util.math.Box;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -23,7 +22,7 @@ public class NearCommand implements Command {
     public String name = "near";
     public String description = "Show all living entities in the specified radius (default: 50).";
     public Class<?> category = InfoCategory.class;
-    public List<Argument> arguments = Arrays.asList(
+    public List<Argument> arguments = List.of(
             new Argument("box_radius", IntegerArgumentType.integer(1, 300))
     );
 

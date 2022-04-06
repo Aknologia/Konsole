@@ -9,14 +9,13 @@ import dev.aknologia.konsole.niflheim.arguments.StringArgumentType;
 import dev.aknologia.konsole.niflheim.context.CommandContext;
 import dev.aknologia.konsole.niflheim.exceptions.CommandSyntaxException;
 
-import java.util.Arrays;
 import java.util.List;
 
 public class SayCommand implements Command {
     public String name = "say";
     public String description = "Send a message in the chat.";
     public Class<?> category = UtilityCategory.class;
-    public List<Argument> arguments = Arrays.asList(
+    public List<Argument> arguments = List.of(
             new Argument("message", StringArgumentType.greedyString(), true)
     );
 

@@ -19,7 +19,7 @@ public class WhoIsCommand implements Command {
     public String name = "whois";
     public String description = "Show all available information of the specified player.";
     public Class<?> category = InfoCategory.class;
-    public List<Argument> arguments = Arrays.asList(
+    public List<Argument> arguments = List.of(
             new Argument("player", PlayerArgumentType.player(), true)
     );
 

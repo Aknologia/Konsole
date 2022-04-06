@@ -3,12 +3,12 @@
   "id": "konsole",
   "version": "${version}",
   "name": "Konsole",
-  "description": "Clientside mod for debugging made with FabricMC.",
+  "description": "Konsole is a Minecraft Clientside mod that adds a brand-new console to the game.",
   "authors": [
     "Aknologia"
   ],
   "contact": {
-    "website": "https://aknologia.github.io/Konsole",
+    "website": "https://konsole.aknologia.dev",
     "repo": "https://github.com/Aknologia/Konsole"
   },
   "license": "MIT",

@@ -12,14 +12,13 @@ import dev.aknologia.konsole.niflheim.context.CommandContext;
 import dev.aknologia.konsole.niflheim.exceptions.CommandSyntaxException;
 import org.lwjgl.glfw.GLFW;
 
-import java.util.Arrays;
 import java.util.List;
 
 public class BindCommand implements Command {
     public String name = "bind";
     public String description = "Bind a key to a specific command.";
     public Class<?> category = UtilityCategory.class;
-    public List<Argument> arguments = Arrays.asList(
+    public List<Argument> arguments = List.of(
             new Argument("key", KeyArgumentType.keyArg(), true),
             new Argument("command", StringArgumentType.string(), true)
     );

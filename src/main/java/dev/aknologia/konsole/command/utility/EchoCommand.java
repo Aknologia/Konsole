@@ -10,14 +10,13 @@ import dev.aknologia.konsole.niflheim.context.CommandContext;
 import dev.aknologia.konsole.niflheim.exceptions.CommandSyntaxException;
 import net.minecraft.text.LiteralText;
 
-import java.util.Arrays;
 import java.util.List;
 
 public class EchoCommand implements Command {
     public String name = "echo";
     public String description = "Send a message in the console.";
     public Class<?> category = UtilityCategory.class;
-    public List<Argument> arguments = Arrays.asList(new Argument("message", StringArgumentType.greedyString(), true));
+    public List<Argument> arguments = List.of(new Argument("message", StringArgumentType.greedyString(), true));
 
     @Override
     public int run(CommandContext context) throws CommandSyntaxException {

@@ -4,7 +4,6 @@ import dev.aknologia.konsole.KonsoleClient;
 import dev.aknologia.konsole.command.UtilityCategory;
 import dev.aknologia.konsole.niflheim.Category;
 import dev.aknologia.konsole.niflheim.Command;
-import dev.aknologia.konsole.niflheim.CommandDispatcher;
 import dev.aknologia.konsole.niflheim.arguments.Argument;
 import dev.aknologia.konsole.niflheim.arguments.IntegerArgumentType;
 import dev.aknologia.konsole.niflheim.arguments.MultipleArgumentType;
@@ -20,7 +19,7 @@ public class HelpCommand implements Command {
     public String name = "help";
     public String description = "Shows this help message.";
     public Class<?> category = UtilityCategory.class;
-    public List<Argument> arguments = Arrays.asList(
+    public List<Argument> arguments = List.of(
             new Argument(
                     "command|page",
                     MultipleArgumentType.multiple(

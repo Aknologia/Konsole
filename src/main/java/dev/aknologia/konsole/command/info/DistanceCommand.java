@@ -1,6 +1,5 @@
 package dev.aknologia.konsole.command.info;
 
-import com.mojang.brigadier.LiteralMessage;
 import dev.aknologia.konsole.KonsoleClient;
 import dev.aknologia.konsole.command.UtilityCategory;
 import dev.aknologia.konsole.niflheim.Category;
@@ -13,14 +12,13 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.text.LiteralText;
 import net.minecraft.util.math.Vec3d;
 
-import java.util.Arrays;
 import java.util.List;
 
 public class DistanceCommand implements Command {
     public String name = "distance";
     public String description = "Calculates the distance between 2 positions.";
     public Class<?> category = UtilityCategory.class;
-    public List<Argument> arguments = Arrays.asList(
+    public List<Argument> arguments = List.of(
             new Argument("x1", DoubleArgumentType.doubleArg(), true),
             new Argument("y1", DoubleArgumentType.doubleArg(), true),
             new Argument("z1", DoubleArgumentType.doubleArg(), true),
