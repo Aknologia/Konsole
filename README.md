@@ -2,7 +2,7 @@
   <a href="#"><img width="230" height="230" align="left" src="https://raw.githubusercontent.com/Aknologia/Konsole/master/src/main/resources/assets/konsole/icon.png" alt="Konsole"/></a>
   <br>
   <h1>Konsole 
-    <a href="https://github.com/Aknologia/Konsole/actions/workflows/gradle.yml"><img src="https://github.com/Aknologia/Konsole/actions/workflows/gradle.yml/badge.svg" alt="Java CI"></img></a>
+    <a href="https://github.com/Aknologia/Konsole/actions/workflows/build.yml"><img src="https://github.com/Aknologia/Konsole/actions/workflows/build.yml/badge.svg" alt="Java CI"></img></a>
     <a href="https://github.com/Aknologia/Konsole/releases"><img src="https://img.shields.io/github/v/release/Aknologia/Konsole?include_prereleases"></img></a>
     
   </h1>
