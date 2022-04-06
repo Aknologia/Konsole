@@ -182,9 +182,6 @@ public class Keys {
         _list.put("`", GLFW.GLFW_KEY_GRAVE_ACCENT);
         _list.put("graveaccent", GLFW.GLFW_KEY_GRAVE_ACCENT);
 
-        _list.put("`", GLFW.GLFW_KEY_ENTER);
-        _list.put("graveaccent", GLFW.GLFW_KEY_GRAVE_ACCENT);
-
         _list.put("=", GLFW.GLFW_KEY_EQUAL);
         _list.put("equal", GLFW.GLFW_KEY_EQUAL);
 

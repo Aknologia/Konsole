@@ -123,11 +123,11 @@ public class KonsoleScreen extends Screen {
             return true;
         }
         if(keyCode == GLFW.GLFW_KEY_PAGE_UP) {
-            this.scroll(KonsoleClient.KONSOLE.getVisibleLineCount() - 1);
+            this.scroll(KonsoleClient.KONSOLE.getVisibleLineCount() - 1d);
             return true;
         }
         if(keyCode == GLFW.GLFW_KEY_PAGE_DOWN) {
-            this.scroll(-KonsoleClient.KONSOLE.getVisibleLineCount() + 1);
+            this.scroll(-KonsoleClient.KONSOLE.getVisibleLineCount() + 1d);
             return true;
         }
         return false;
