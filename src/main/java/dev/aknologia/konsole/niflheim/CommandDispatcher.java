@@ -87,7 +87,7 @@ public class CommandDispatcher {
                 consumer.onCommandComplete(context, false, 0);
                 throw ex;
             } catch(final IllegalArgumentException ex) {
-                KonsoleClient.COMMAND_MANAGER.sendError(new LiteralText("Missing required argument"));
+                KonsoleClient.getCommandManager().sendError(new LiteralText("Missing required argument"));
             } catch(Exception ex) {
                 KonsoleClient.LOG.warn("Got error while running command: %s", ex);
             }
@@ -205,8 +205,8 @@ public class CommandDispatcher {
     public Suggestions getCommandCompletionSuggestions(String truncatedInputLowerCase, int cursor) {
         StringRange range = new StringRange(0, cursor);
         List<Suggestion> suggestions = new ArrayList<>();
-        List<String> commands = new ArrayList<>(KonsoleClient.COMMAND_MANAGER.getDispatcher().getCommands().keySet());
-        commands.addAll(new ArrayList<>(KonsoleClient.COMMAND_MANAGER.getDispatcher().convars.keySet()));
+        List<String> commands = new ArrayList<>(KonsoleClient.getCommandManager().getDispatcher().getCommands().keySet());
+        commands.addAll(new ArrayList<>(KonsoleClient.getCommandManager().getDispatcher().convars.keySet()));
         List<Suggestion> list2 = new ArrayList<>();
         Iterator<String> iterator = commands.iterator();
         while(iterator.hasNext()) {

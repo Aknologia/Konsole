@@ -10,10 +10,7 @@ import dev.aknologia.konsole.niflheim.context.CommandContext;
 import dev.aknologia.konsole.niflheim.exceptions.CommandSyntaxException;
 import net.minecraft.text.LiteralText;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 public class ListBindCommand implements Command {
     public String name = "listbind";
@@ -24,14 +21,14 @@ public class ListBindCommand implements Command {
     @Override
     public int run(CommandContext context) throws CommandSyntaxException {
         List<String> lines = new ArrayList<>();
-        HashMap<Integer, String> bindsList = KonsoleClient.BINDS;
+        Map<Integer, String> bindsList = KonsoleClient.BINDS;
         Iterator<Integer> iterator = bindsList.keySet().iterator();
         while(iterator.hasNext()) {
             Integer keyCode = iterator.next();
             String boundCommand = bindsList.get(keyCode);
             lines.add(String.format("\u00A73%s \u00A7r= \u00A77\"%s\"", KeyManager.KEYS.getKeyName(keyCode), boundCommand));
         }
-        KonsoleClient.KONSOLE.addMessage(new LiteralText(String.join("\n", lines)));
+        KonsoleClient.getKonsole().addMessage(new LiteralText(String.join("\n", lines)));
         return 1;
     }
 

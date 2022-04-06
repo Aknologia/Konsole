@@ -8,6 +8,7 @@ import dev.aknologia.konsole.niflheim.arguments.Argument;
 import dev.aknologia.konsole.niflheim.arguments.StringArgumentType;
 import dev.aknologia.konsole.niflheim.context.CommandContext;
 import dev.aknologia.konsole.niflheim.exceptions.CommandSyntaxException;
+import net.minecraft.client.MinecraftClient;
 
 import java.util.List;
 
@@ -21,7 +22,7 @@ public class SayCommand implements Command {
 
     @Override
     public int run(CommandContext context) throws CommandSyntaxException {
-        KonsoleClient.CLIENT.player.sendChatMessage(context.getArgument("message", String.class));
+        MinecraftClient.getInstance().player.sendChatMessage(context.getArgument("message", String.class));
         return 1;
     }
 

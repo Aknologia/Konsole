@@ -12,38 +12,64 @@ import net.minecraft.client.MinecraftClient;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.HashMap;
+import java.util.Map;
 
 public class KonsoleClient implements ClientModInitializer {
-    public static KonsoleClient INSTANCE;
-
     public static final String MODID = "konsole";
     public static final ModMetadata META = FabricLoader.getInstance().getModContainer(MODID).get().getMetadata();
 
     public static final Logger LOG = LogManager.getFormatterLogger(META.getName());
-    public static MinecraftClient CLIENT;
 
-    public static CommandManager COMMAND_MANAGER;
-    public static Konsole KONSOLE;
-    public static KonsoleScreen SCREEN_INSTANCE;
+    private static KonsoleClient instance;
+    private static MinecraftClient client;
 
-    public static HashMap<Integer, String> BINDS;
-    public static HashMap<String, String> ALIASES;
+    private static CommandManager commandManager;
+    private static Konsole konsole;
+    private static KonsoleScreen konsoleScreen;
+
+    public static final Map<Integer, String> BINDS = Map.of();
+    public static final Map<String, String> ALIASES = Map.of();
 
     @Override
     public void onInitializeClient() {
         if(!FabricLoader.getInstance().isModLoaded(MODID)) return;
         LOG.info("Initializing %s v%s", META.getName(), META.getVersion());
 
-        CLIENT = MinecraftClient.getInstance();
-        KONSOLE = new Konsole(CLIENT);
-        SCREEN_INSTANCE = new KonsoleScreen("", CLIENT);
-        INSTANCE = this;
+        KonsoleClient.init();
+        KonsoleClient.setInstance(this);
 
+        LOG.info("Initialized %s v%s", META.getName(), META.getVersion());
+    }
+
+    private static void init() {
+        client = MinecraftClient.getInstance();
+        konsole = new Konsole(client);
+        konsoleScreen = new KonsoleScreen("", client);
         KeyManager.init();
-        COMMAND_MANAGER = new CommandManager();
+        commandManager = new CommandManager();
+    }
 
-        BINDS = new HashMap<>();
-        ALIASES = new HashMap<>();
+    private static void setInstance(KonsoleClient instance) {
+        KonsoleClient.instance = instance;
+    }
+
+    public static KonsoleClient getInstance() {
+        return instance;
+    }
+
+    public static MinecraftClient getClient() {
+        return client;
+    }
+
+    public static CommandManager getCommandManager() {
+        return commandManager;
+    }
+
+    public static Konsole getKonsole() {
+        return konsole;
+    }
+
+    public static KonsoleScreen getKonsoleScreen() {
+        return konsoleScreen;
     }
 }

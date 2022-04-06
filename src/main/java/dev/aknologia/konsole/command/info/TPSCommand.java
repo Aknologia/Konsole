@@ -27,10 +27,10 @@ public class TPSCommand implements Command {
         IntegratedServer server = MinecraftClient.getInstance().getServer();
         ClientConnection clientConnection = MinecraftClient.getInstance().getNetworkHandler().getConnection();
         if(server == null) {
-            KonsoleClient.KONSOLE.addMessage(new LiteralText("This command is only available in singleplayer.").formatted(Formatting.RED));
+            KonsoleClient.getKonsole().addMessage(new LiteralText("This command is only available in singleplayer.").formatted(Formatting.RED));
             return 1;
         }
-        KonsoleClient.KONSOLE.addMessage(new LiteralText(String.format("\u00A76\u00A7nTicks:\u00A7r \u00A7b%.0f\u00A7rms per tick \u00A77(%s total ticks)\n\u00A76\u00A7nPackets Average:\u00A7r \u00A7b%.0f\u00A7r sent, \u00A7b%.0f\u00A7r received", server.getTickTime(), server.getTicks(), clientConnection.getAveragePacketsSent(), clientConnection.getAveragePacketsReceived())));
+        KonsoleClient.getKonsole().addMessage(new LiteralText(String.format("\u00A76\u00A7nTicks:\u00A7r \u00A7b%.0f\u00A7rms per tick \u00A77(%s total ticks)\n\u00A76\u00A7nPackets Average:\u00A7r \u00A7b%.0f\u00A7r sent, \u00A7b%.0f\u00A7r received", server.getTickTime(), server.getTicks(), clientConnection.getAveragePacketsSent(), clientConnection.getAveragePacketsReceived())));
         return 1;
     }
 

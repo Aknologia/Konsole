@@ -33,8 +33,8 @@ public class CommandContext {
         this.arguments = arguments;
         this.range = range;
         if(command == null) {
-            this.command = KonsoleClient.COMMAND_MANAGER.getDispatcher().getCommand(this.input);
-            if(this.command == null) this.command = KonsoleClient.COMMAND_MANAGER.getDispatcher().getConVar(this.input);
+            this.command = KonsoleClient.getCommandManager().getDispatcher().getCommand(this.input);
+            if(this.command == null) this.command = KonsoleClient.getCommandManager().getDispatcher().getConVar(this.input);
         } else this.command = command;
     }
 

@@ -47,19 +47,19 @@ public class HelpCommand implements Command {
     }
 
     private int showCommandInfo(CommandContext context, String name) throws CommandSyntaxException {
-        Command command = KonsoleClient.COMMAND_MANAGER.getDispatcher().getCommand(name.trim().toLowerCase(Locale.ROOT));
+        Command command = KonsoleClient.getCommandManager().getDispatcher().getCommand(name.trim().toLowerCase(Locale.ROOT));
         if(command == null) throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.dispatcherUnknownCommand().create();
 
         List<String> lines = new ArrayList<>();
         lines.add(String.format("\u00A7lHELP\u00A7r \u00A77> \u00A7b%s", command.getName()));
         lines.add(String.format("\n\u00A7nDescription:\u00A7r\u00A77 %s", command.getDescription()));
-        lines.add(String.format("\u00A7nUsage:\u00A7r\u00A77 %s", KonsoleClient.COMMAND_MANAGER.getDispatcher().getUsage(command)));
-        KonsoleClient.KONSOLE.addMessage(new LiteralText(String.join("\n", lines)));
+        lines.add(String.format("\u00A7nUsage:\u00A7r\u00A77 %s", KonsoleClient.getCommandManager().getDispatcher().getUsage(command)));
+        KonsoleClient.getKonsole().addMessage(new LiteralText(String.join("\n", lines)));
         return 1;
     }
 
     private int showPage(CommandContext context, int page) throws CommandSyntaxException {
-        List<Command> commands = KonsoleClient.COMMAND_MANAGER.getDispatcher().getCommands().values().stream().toList();
+        List<Command> commands = KonsoleClient.getCommandManager().getDispatcher().getCommands().values().stream().toList();
         int maxPage = MathHelper.floor(commands.size()/commandsPerPage);
         int start = page * commandsPerPage;
         if(start >= commands.size()) throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.integerTooHigh().create(page+1, maxPage+1);
@@ -75,7 +75,7 @@ public class HelpCommand implements Command {
             lines.add(String.format("  \u00A73%s \u00A7f- \u00A77%s", command.getName(), command.getDescription()));
         }
 
-        KonsoleClient.KONSOLE.addMessage(new LiteralText(String.join("\n", lines)));
+        KonsoleClient.getKonsole().addMessage(new LiteralText(String.join("\n", lines)));
         return 1;
     }
 

@@ -36,7 +36,7 @@ public class PlayersCommand implements Command {
         List<PlayerListEntry> list = ENTRY_ORDERING.sortedCopy(clientPlayNetworkHandler.getPlayerList());
         List<String> players = new ArrayList<>();
         list.forEach(pl -> players.add(String.format("-  \u00A7r%s \u00A7r\u00A77\u00A7o%sms", pl.getProfile().getName(), pl.getLatency())));
-        KonsoleClient.KONSOLE.addMessage(new LiteralText(String.format("\u00A76\u00A7nPlayers:\u00A7r %s\n%s", clientPlayNetworkHandler.getPlayerList().size(), String.join("\n", players))));
+        KonsoleClient.getKonsole().addMessage(new LiteralText(String.format("\u00A76\u00A7nPlayers:\u00A7r %s\n%s", clientPlayNetworkHandler.getPlayerList().size(), String.join("\n", players))));
         return 1;
     }
 

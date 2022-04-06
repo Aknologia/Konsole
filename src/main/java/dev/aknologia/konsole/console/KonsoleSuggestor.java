@@ -147,7 +147,7 @@ public class KonsoleSuggestor {
         StringReader stringReader = new StringReader(string);
         int i = this.textField.getCursor();
         int j;
-        CommandDispatcher commandDispatcher = KonsoleClient.COMMAND_MANAGER.getDispatcher();
+        CommandDispatcher commandDispatcher = KonsoleClient.getCommandManager().getDispatcher();
         if(this.parse == null) {
             try {
                 this.parse = commandDispatcher.parse(stringReader);
@@ -217,7 +217,7 @@ public class KonsoleSuggestor {
         CommandContextBuilder commandContextBuilder = this.parse.getContext();
         SuggestionContext suggestionContext = commandContextBuilder.findSuggestionContext(this.textField.getText(), this.textField.getCursor());
         int startPos = suggestionContext != null && suggestionContext.startPos > 0 ? suggestionContext.startPos : 0;
-        String usage = KonsoleClient.COMMAND_MANAGER.getDispatcher().getUsage(commandContextBuilder.getCommand());
+        String usage = KonsoleClient.getCommandManager().getDispatcher().getUsage(commandContextBuilder.getCommand());
         Style style = Style.EMPTY.withColor(formatting);
         if(usage != null && usage.trim().length() > 0) {
             this.messages.add(OrderedText.styledForwardsVisitedString(usage, style));

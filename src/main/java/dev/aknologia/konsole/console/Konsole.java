@@ -68,10 +68,10 @@ public class Konsole {
         for(int m = 0; m < fullParts.length; m++) {
             String sum = fullParts[m];
             int iterations = 0;
-            while(this.client.textRenderer.getWidth(sum) > KonsoleClient.SCREEN_INSTANCE.getLinesWidth()) {
+            while(this.client.textRenderer.getWidth(sum) > KonsoleClient.getKonsoleScreen().getLinesWidth()) {
                 int maxIndex = 0;
                 for(int i = 0; i < sum.length(); i++) {
-                    if(this.client.textRenderer.getWidth(sum.substring(0, i)) < KonsoleClient.SCREEN_INSTANCE.getLinesWidth()) maxIndex = i;
+                    if(this.client.textRenderer.getWidth(sum.substring(0, i)) < KonsoleClient.getKonsoleScreen().getLinesWidth()) maxIndex = i;
                     else break;
                 }
                 String sub = sum.substring(0, maxIndex);
@@ -131,6 +131,6 @@ public class Konsole {
     }
 
     public void run(@NotNull String text) {
-        KonsoleClient.COMMAND_MANAGER.execute(text);
+        KonsoleClient.getCommandManager().execute(text);
     }
 }

@@ -7,6 +7,7 @@ import dev.aknologia.konsole.niflheim.Command;
 import dev.aknologia.konsole.niflheim.arguments.Argument;
 import dev.aknologia.konsole.niflheim.context.CommandContext;
 import dev.aknologia.konsole.niflheim.exceptions.CommandSyntaxException;
+import net.minecraft.client.MinecraftClient;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +20,7 @@ public class RefreshCommand implements Command {
 
     @Override
     public int run(CommandContext context) throws CommandSyntaxException {
-        KonsoleClient.CLIENT.worldRenderer.reload();
+        MinecraftClient.getInstance().worldRenderer.reload();
         return 1;
     }
 

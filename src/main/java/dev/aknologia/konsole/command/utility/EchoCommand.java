@@ -20,7 +20,7 @@ public class EchoCommand implements Command {
 
     @Override
     public int run(CommandContext context) throws CommandSyntaxException {
-        KonsoleClient.KONSOLE.addMessage(new LiteralText(context.getArgument("message", String.class)));
+        KonsoleClient.getKonsole().addMessage(new LiteralText(context.getArgument("message", String.class)));
         return 1;
     }
 

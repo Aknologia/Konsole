@@ -25,7 +25,7 @@ public class KeyboardMixin implements KeyboardMixinInterface {
         if(key == GLFW.GLFW_KEY_LEFT_CONTROL) ctrlPressed = action > 0;
 
         if(this.client.currentScreen == null && KonsoleClient.BINDS.containsKey(key) && InputUtil.isKeyPressed(this.client.getWindow().getHandle(), key)) {
-            KonsoleClient.KONSOLE.run(KonsoleClient.BINDS.get(key));
+            KonsoleClient.getKonsole().run(KonsoleClient.BINDS.get(key));
         }
     }
 

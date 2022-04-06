@@ -7,6 +7,7 @@ import dev.aknologia.konsole.niflheim.Command;
 import dev.aknologia.konsole.niflheim.arguments.Argument;
 import dev.aknologia.konsole.niflheim.context.CommandContext;
 import dev.aknologia.konsole.niflheim.exceptions.CommandSyntaxException;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.DimensionEffects;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.text.LiteralText;
@@ -25,7 +26,7 @@ public class DimensionCommand implements Command {
 
     @Override
     public int run(CommandContext context) throws CommandSyntaxException {
-        ClientWorld world = KonsoleClient.CLIENT.player.clientWorld;
+        ClientWorld world = MinecraftClient.getInstance().player.clientWorld;
         DimensionType dimension = world.getDimension();
         DimensionEffects effects = world.getDimensionEffects();
 
@@ -61,7 +62,7 @@ public class DimensionCommand implements Command {
         List<String> listParam = new ArrayList<>();
         parameters.keySet().forEach(k -> listParam.add(String.format("    \u00A77- %s:\u00A7%s %s", k, parameters.get(k) ? "a" : "c", parameters.get(k))));
         message = message.concat(String.join("\n", listParam));
-        KonsoleClient.KONSOLE.addMessage(new LiteralText(message));
+        KonsoleClient.getKonsole().addMessage(new LiteralText(message));
         return 1;
     }
 

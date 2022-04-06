@@ -20,7 +20,7 @@ public class MouseMixin {
     private void onMouseButton(long window, int button, int action, int mods, CallbackInfo ci) {
         if(window != this.client.getWindow().getHandle()) return;
         if(action == 1 && this.client.currentScreen == null && KonsoleClient.BINDS.containsKey(button)) {
-            KonsoleClient.KONSOLE.run(KonsoleClient.BINDS.get(button));
+            KonsoleClient.getKonsole().run(KonsoleClient.BINDS.get(button));
         }
     }
 
@@ -28,9 +28,9 @@ public class MouseMixin {
     private void onMouseScroll(long window, double horizontal, double vertical, CallbackInfo ci) {
         if(window == this.client.getWindow().getHandle() && this.client.currentScreen == null) {
             if(vertical > 0 && KonsoleClient.BINDS.containsKey(Keys.MWHEELUP))
-                KonsoleClient.KONSOLE.run(KonsoleClient.BINDS.get(Keys.MWHEELUP));
+                KonsoleClient.getKonsole().run(KonsoleClient.BINDS.get(Keys.MWHEELUP));
             else if(vertical < 0 && KonsoleClient.BINDS.containsKey(Keys.MWHEELDOWN))
-                KonsoleClient.KONSOLE.run(KonsoleClient.BINDS.get(Keys.MWHEELDOWN));
+                KonsoleClient.getKonsole().run(KonsoleClient.BINDS.get(Keys.MWHEELDOWN));
         }
     }
 }

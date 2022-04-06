@@ -28,7 +28,7 @@ public class CommandManager {
     }
 
     public void sendError(Text message) {
-        KonsoleClient.KONSOLE.addMessage(new LiteralText("").formatted(Formatting.RED).append(message));
+        KonsoleClient.getKonsole().addMessage(new LiteralText("").formatted(Formatting.RED).append(message));
     }
 
     public int execute(String command) {
@@ -95,7 +95,7 @@ public class CommandManager {
             try {
                 convar.set(convar.getArgumentValue(context));
             } catch(IllegalArgumentException error) {
-                KonsoleClient.KONSOLE.addMessage(new LiteralText(convar.toString()));
+                KonsoleClient.getKonsole().addMessage(new LiteralText(convar.toString()));
             }
 
             return 1;

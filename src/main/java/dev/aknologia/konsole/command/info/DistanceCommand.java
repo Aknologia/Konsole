@@ -39,7 +39,7 @@ public class DistanceCommand implements Command {
             secondPos = new Vec3d(DoubleArgumentType.getDouble(context, "x2"), DoubleArgumentType.getDouble(context, "y2"), DoubleArgumentType.getDouble(context, "z2"));
         } catch(IllegalArgumentException ignored) { }
         double distance = Math.sqrt(Math.pow(secondPos.getX() - firstPos.getX(), 2) + Math.pow(secondPos.getY() - firstPos.getY(), 2) + Math.pow(secondPos.getZ() - firstPos.getZ(), 2));
-        KonsoleClient.KONSOLE.addMessage(new LiteralText(String.format("(%s) to (%s)\n\u00A76\u00A7nDistance:\u00A7r %.2f block(s)", this.vec3dToString(firstPos), this.vec3dToString(secondPos), distance)));
+        KonsoleClient.getKonsole().addMessage(new LiteralText(String.format("(%s) to (%s)\n\u00A76\u00A7nDistance:\u00A7r %.2f block(s)", this.vec3dToString(firstPos), this.vec3dToString(secondPos), distance)));
         return 1;
     }
 

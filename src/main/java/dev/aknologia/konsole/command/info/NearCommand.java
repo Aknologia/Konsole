@@ -50,7 +50,7 @@ public class NearCommand implements Command {
         });
         List<String> playerNames = new ArrayList<>();
         players.forEach(pl -> playerNames.add(pl.getDisplayName().asString()));
-        KonsoleClient.KONSOLE.addMessage(new LiteralText(String.format("\u00A76\u00A7nBox Radius:\u00A7r\u00A7b %s\n\u00A76\u00A7nPlayers:\u00A7r %s\n\u00A76\u00A7nLiving Entities:\u00A7r %s", radius, playerNames.isEmpty() ? "\u00A77\u00A7onone\u00A7r" : String.join(", ", playerNames), entityNames.isEmpty() ? "\u00A77\u00A7onone\u00A7r" : String.join(", ", entityNames))));
+        KonsoleClient.getKonsole().addMessage(new LiteralText(String.format("\u00A76\u00A7nBox Radius:\u00A7r\u00A7b %s\n\u00A76\u00A7nPlayers:\u00A7r %s\n\u00A76\u00A7nLiving Entities:\u00A7r %s", radius, playerNames.isEmpty() ? "\u00A77\u00A7onone\u00A7r" : String.join(", ", playerNames), entityNames.isEmpty() ? "\u00A77\u00A7onone\u00A7r" : String.join(", ", entityNames))));
         return 1;
     }
 

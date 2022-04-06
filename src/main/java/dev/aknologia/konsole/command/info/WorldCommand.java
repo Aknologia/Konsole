@@ -7,6 +7,7 @@ import dev.aknologia.konsole.niflheim.Command;
 import dev.aknologia.konsole.niflheim.arguments.Argument;
 import dev.aknologia.konsole.niflheim.context.CommandContext;
 import dev.aknologia.konsole.niflheim.exceptions.CommandSyntaxException;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.text.LiteralText;
 import net.minecraft.util.math.MathHelper;
@@ -35,7 +36,7 @@ public class WorldCommand implements Command {
 
     @Override
     public int run(CommandContext context) throws CommandSyntaxException {
-        ClientWorld world = KonsoleClient.CLIENT.player.clientWorld;
+        ClientWorld world = MinecraftClient.getInstance().player.clientWorld;
         ClientWorld.Properties properties = world.getLevelProperties();
         int spawnX = properties.getSpawnX(); int spawnY = properties.getSpawnY(); int spawnZ = properties.getSpawnZ();
         String totalTime = formatTickTime(properties.getTime()); String dayTime = formatTickTime(properties.getTimeOfDay());
@@ -66,7 +67,7 @@ public class WorldCommand implements Command {
                 borderSize,
                 borderNorth, borderSouth, borderEast, borderWest);
 
-        KonsoleClient.KONSOLE.addMessage(new LiteralText(message));
+        KonsoleClient.getKonsole().addMessage(new LiteralText(message));
         return 1;
     }
 

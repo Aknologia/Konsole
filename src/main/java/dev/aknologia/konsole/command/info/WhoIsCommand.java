@@ -61,7 +61,7 @@ public class WhoIsCommand implements Command {
                 stringProperties.size() > 0 ? "\n\n\u00A76\u00A7nProperties:\u00A7r\n" + String.join("\n", stringProperties) : "",
                 player.getProfile().getId());
 
-        KonsoleClient.KONSOLE.addMessage(new LiteralText(profile));
+        KonsoleClient.getKonsole().addMessage(new LiteralText(profile));
         return 1;
     }
 

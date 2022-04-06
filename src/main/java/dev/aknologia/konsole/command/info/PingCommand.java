@@ -23,7 +23,7 @@ public class PingCommand implements Command {
     @Override
     public int run(CommandContext context) throws CommandSyntaxException {
         ClientPlayNetworkHandler clientPlayNetworkHandler = MinecraftClient.getInstance().getNetworkHandler();
-        KonsoleClient.KONSOLE.addMessage(new LiteralText(String.format("\u00A76\u00A7nLatency:\u00A7r %sms", clientPlayNetworkHandler.getPlayerListEntry(MinecraftClient.getInstance().player.getUuid()).getLatency())));
+        KonsoleClient.getKonsole().addMessage(new LiteralText(String.format("\u00A76\u00A7nLatency:\u00A7r %sms", clientPlayNetworkHandler.getPlayerListEntry(MinecraftClient.getInstance().player.getUuid()).getLatency())));
         return 1;
     }
 

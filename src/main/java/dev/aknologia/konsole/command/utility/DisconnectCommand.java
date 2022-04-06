@@ -7,6 +7,7 @@ import dev.aknologia.konsole.niflheim.Command;
 import dev.aknologia.konsole.niflheim.arguments.Argument;
 import dev.aknologia.konsole.niflheim.context.CommandContext;
 import dev.aknologia.konsole.niflheim.exceptions.CommandSyntaxException;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.SaveLevelScreen;
 import net.minecraft.client.gui.screen.TitleScreen;
 import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
@@ -24,21 +25,22 @@ public class DisconnectCommand implements Command {
 
     @Override
     public int run(CommandContext context) throws CommandSyntaxException {
-        boolean bl = KonsoleClient.CLIENT.isInSingleplayer();
-        boolean bl2 = KonsoleClient.CLIENT.isConnectedToRealms();
-        KonsoleClient.CLIENT.world.disconnect();
+        MinecraftClient client = MinecraftClient.getInstance();
+        boolean bl = client.isInSingleplayer();
+        boolean bl2 = client.isConnectedToRealms();
+        client.world.disconnect();
         if (bl) {
-            KonsoleClient.CLIENT.disconnect(new SaveLevelScreen(new TranslatableText("menu.savingLevel")));
+            client.disconnect(new SaveLevelScreen(new TranslatableText("menu.savingLevel")));
         } else {
-            KonsoleClient.CLIENT.disconnect();
+            client.disconnect();
         }
         TitleScreen titleScreen = new TitleScreen();
         if (bl) {
-            KonsoleClient.CLIENT.setScreen(titleScreen);
+            client.setScreen(titleScreen);
         } else if (bl2) {
-            KonsoleClient.CLIENT.setScreen(new RealmsMainScreen(titleScreen));
+            client.setScreen(new RealmsMainScreen(titleScreen));
         } else {
-            KonsoleClient.CLIENT.setScreen(new MultiplayerScreen(titleScreen));
+            client.setScreen(new MultiplayerScreen(titleScreen));
         }
         return 1;
     }

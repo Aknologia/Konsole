@@ -9,6 +9,7 @@ import dev.aknologia.konsole.niflheim.context.CommandContext;
 import dev.aknologia.konsole.niflheim.exceptions.CommandSyntaxException;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.BlockState;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.fluid.FluidState;
@@ -51,12 +52,13 @@ public class PosCommand implements Command {
 
     @Override
     public int run(CommandContext context) throws CommandSyntaxException {
-        ClientPlayerEntity player = KonsoleClient.CLIENT.player;
+        MinecraftClient client = MinecraftClient.getInstance();
+        ClientPlayerEntity player = client.player;
         Vec3d pos = player.getPos(); Vec3d eyePos = player.getEyePos();
-        World world = KonsoleClient.CLIENT.world;
+        World world = client.world;
         float yaw = player.getYaw(); float pitch = player.getPitch();
 
-        Entity entity = KonsoleClient.CLIENT.getCameraEntity();
+        Entity entity = client.getCameraEntity();
         HitResult blockHit = entity.raycast(20.0, 0.0f, false);
         HitResult fluidHit = entity.raycast(20.0, 0.0f, true);
 
@@ -117,11 +119,11 @@ public class PosCommand implements Command {
             }
         }
 
-        if(KonsoleClient.CLIENT.targetedEntity != null) {
-            lines.add(String.format("\u00A7nTargeted Entity:\u00A7r %s", String.valueOf(Registry.ENTITY_TYPE.getId(((Entity)KonsoleClient.CLIENT.targetedEntity).getType()))));
+        if(client.targetedEntity != null) {
+            lines.add(String.format("\u00A7nTargeted Entity:\u00A7r %s", String.valueOf(Registry.ENTITY_TYPE.getId(((Entity)client.targetedEntity).getType()))));
         }
 
-        KonsoleClient.KONSOLE.addMessage(new LiteralText(String.join("\n", lines)));
+        KonsoleClient.getKonsole().addMessage(new LiteralText(String.join("\n", lines)));
         return 1;
     }
 

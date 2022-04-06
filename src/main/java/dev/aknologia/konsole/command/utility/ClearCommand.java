@@ -19,7 +19,7 @@ public class ClearCommand implements Command {
 
     @Override
     public int run(CommandContext context) throws CommandSyntaxException {
-        KonsoleClient.KONSOLE.clear(false);
+        KonsoleClient.getKonsole().clear(false);
         return 1;
     }
 
