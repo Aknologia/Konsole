@@ -6,7 +6,7 @@
     <a href="https://github.com/Aknologia/Konsole/releases"><img src="https://img.shields.io/github/v/release/Aknologia/Konsole?include_prereleases"></img></a>
     
   </h1>
-  <p>Konsole is a Minecraft Clientside mod that adds a brand-new console to the game.<br>It is mainly used for debugging and utility purposes.</p>
+  <p>Konsole is a Minecraft Clientside mod that adds a brand-new console to the game. It is mainly used for debugging and utility purposes.</p>
   <h6>MIT © 2022 Aknologia</h6>
   <a href="https://www.minecraft.net/en-us/download"><img src="https://img.shields.io/badge/minecraft-1.18.2-yellowgreen"></img></a>
   <a href="https://fabricmc.net/use/installer/"><img src="https://img.shields.io/badge/fabric%20loader-%5E0.13.3-fffca3"></img></a>
