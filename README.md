@@ -17,7 +17,7 @@
           src="https://img.shields.io/badge/fabric%20api-0.48.0%2B1.18.2-ffe3a3"/></a>
   <br>
   <br>
-  <div style="text-align:center">
+  <p align="center">
       <a href="https://sonarcloud.io/summary/new_code?id=Aknologia_Konsole"><img
             src="https://sonarcloud.io/api/project_badges/measure?project=Aknologia_Konsole&metric=sqale_rating"/></a>
       <a href="https://sonarcloud.io/summary/new_code?id=Aknologia_Konsole"><img
@@ -33,7 +33,7 @@
             src="https://sonarcloud.io/api/project_badges/measure?project=Aknologia_Konsole&metric=code_smells"/></a>
       <a href="https://sonarcloud.io/summary/new_code?id=Aknologia_Konsole"><img
               src="https://sonarcloud.io/api/project_badges/measure?project=Aknologia_Konsole&metric=bugs"/></a>
-  </div>
+  </p>
 </div>
 
 ## Commands
