@@ -2,6 +2,7 @@ package dev.aknologia.konsole.command.info;
 
 import dev.aknologia.konsole.KonsoleClient;
 import dev.aknologia.konsole.command.InfoCategory;
+import dev.aknologia.konsole.niflheim.AbstractCommand;
 import dev.aknologia.konsole.niflheim.Category;
 import dev.aknologia.konsole.niflheim.Command;
 import dev.aknologia.konsole.niflheim.arguments.Argument;
@@ -11,23 +12,23 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.text.LiteralText;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.world.World;
 import net.minecraft.world.border.WorldBorder;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class WorldCommand implements Command {
-    public String name = "world";
-    public String description = "Show informations about the current world.";
-    public Class<?> category = InfoCategory.class;
-    public List<Argument> arguments = new ArrayList<>();
+public class WorldCommand extends AbstractCommand {
+    public WorldCommand() {
+        super("world", "Show informations about the current world.", Category.INFO, List.of());
+    }
 
     private String formatTickTime(long time) {
-        long sec = Math.round(time/2.4e4*86400);
+        float sec = Math.round(time/2.4e4*86400);
         int days = MathHelper.floor(sec / 86400);
         int hours = MathHelper.floor((sec - days * 86400) / 3600);
         int minutes = MathHelper.floor((sec - days * 86400 - hours * 3600) / 60);
-        String result = null;
+        String result;
         if(days < 1 && hours < 1) result = String.format("%sm", minutes);
         else if(days < 1) result = String.format("%sh%sm", hours, minutes);
         else result = String.format("%sd%sh%sm", days, hours, minutes);
@@ -36,6 +37,7 @@ public class WorldCommand implements Command {
 
     @Override
     public int run(CommandContext context) throws CommandSyntaxException {
+        assert MinecraftClient.getInstance().player != null;
         ClientWorld world = MinecraftClient.getInstance().player.clientWorld;
         ClientWorld.Properties properties = world.getLevelProperties();
         int spawnX = properties.getSpawnX(); int spawnY = properties.getSpawnY(); int spawnZ = properties.getSpawnZ();
@@ -70,37 +72,4 @@ public class WorldCommand implements Command {
         KonsoleClient.getKonsole().addMessage(new LiteralText(message));
         return 1;
     }
-
-    @Override
-    public List<Argument> getArguments() {
-        return this.arguments;
-    }
-
-    @Override
-    public void setArguments(List<Argument> arguments) {
-        this.arguments = arguments;
-    }
-
-    @Override
-    public String getName() {
-        return this.name;
-    }
-
-    @Override
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    @Override
-    public String getDescription() {
-        return this.description;
-    }
-
-    @Override
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    @Override
-    public Class<Category> getCategory() { return (Class<Category>) this.category; }
 }

@@ -11,8 +11,6 @@ import java.util.List;
 import java.util.function.Function;
 
 public interface Command {
-    int SINGLE_SUCCESS = 1;
-
     int run(CommandContext context) throws CommandSyntaxException;
 
     List<Argument> getArguments();

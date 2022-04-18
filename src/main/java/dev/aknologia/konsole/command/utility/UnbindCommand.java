@@ -2,9 +2,8 @@ package dev.aknologia.konsole.command.utility;
 
 import com.mojang.brigadier.LiteralMessage;
 import dev.aknologia.konsole.KonsoleClient;
-import dev.aknologia.konsole.command.UtilityCategory;
+import dev.aknologia.konsole.niflheim.AbstractCommand;
 import dev.aknologia.konsole.niflheim.Category;
-import dev.aknologia.konsole.niflheim.Command;
 import dev.aknologia.konsole.niflheim.arguments.Argument;
 import dev.aknologia.konsole.niflheim.arguments.KeyArgumentType;
 import dev.aknologia.konsole.niflheim.arguments.types.Keys;
@@ -15,15 +14,14 @@ import org.lwjgl.glfw.GLFW;
 
 import java.util.List;
 
-public class UnbindCommand implements Command {
-    public String name = "unbind";
-    public String description = "Unbind a specific key.";
-    public Class<?> category = UtilityCategory.class;
-    public List<Argument> arguments = List.of(
-            new Argument("key", KeyArgumentType.keyArg(), true)
-    );
-
+public class UnbindCommand extends AbstractCommand {
     public static final DynamicCommandExceptionType KEY_NOT_BOUND_EXCEPTION = new DynamicCommandExceptionType(expected -> new LiteralMessage("Key not bound: '" + expected + "'"));
+
+    public UnbindCommand() {
+        super("unbind", "Unbind a specific key.", Category.UTILITY, List.of(
+                new Argument("key", KeyArgumentType.keyArg(), true)
+        ));
+    }
 
     @Override
     public int run(CommandContext context) throws CommandSyntaxException {
@@ -33,37 +31,4 @@ public class UnbindCommand implements Command {
         KonsoleClient.BINDS.remove(key.getKeyCode());
         return 1;
     }
-
-    @Override
-    public List<Argument> getArguments() {
-        return this.arguments;
-    }
-
-    @Override
-    public void setArguments(List<Argument> arguments) {
-        this.arguments = arguments;
-    }
-
-    @Override
-    public String getName() {
-        return this.name;
-    }
-
-    @Override
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    @Override
-    public String getDescription() {
-        return this.description;
-    }
-
-    @Override
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    @Override
-    public Class<Category> getCategory() { return (Class<Category>) this.category; }
 }

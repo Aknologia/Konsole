@@ -1,10 +1,8 @@
 package dev.aknologia.konsole.command.info;
 
 import dev.aknologia.konsole.KonsoleClient;
-import dev.aknologia.konsole.command.InfoCategory;
+import dev.aknologia.konsole.niflheim.AbstractCommand;
 import dev.aknologia.konsole.niflheim.Category;
-import dev.aknologia.konsole.niflheim.Command;
-import dev.aknologia.konsole.niflheim.arguments.Argument;
 import dev.aknologia.konsole.niflheim.context.CommandContext;
 import dev.aknologia.konsole.niflheim.exceptions.CommandSyntaxException;
 import net.minecraft.client.MinecraftClient;
@@ -18,11 +16,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class DimensionCommand implements Command {
-    public String name = "dimension";
-    public String description = "Show information about the current dimension.";
-    public Class<?> category = InfoCategory.class;
-    public List<Argument> arguments = new ArrayList<>();
+public class DimensionCommand extends AbstractCommand {
+    public DimensionCommand() {
+        super("dimension", "Show information about the current dimension.", Category.INFO, List.of());
+    }
 
     @Override
     public int run(CommandContext context) throws CommandSyntaxException {
@@ -65,37 +62,4 @@ public class DimensionCommand implements Command {
         KonsoleClient.getKonsole().addMessage(new LiteralText(message));
         return 1;
     }
-
-    @Override
-    public List<Argument> getArguments() {
-        return this.arguments;
-    }
-
-    @Override
-    public void setArguments(List<Argument> arguments) {
-        this.arguments = arguments;
-    }
-
-    @Override
-    public String getName() {
-        return this.name;
-    }
-
-    @Override
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    @Override
-    public String getDescription() {
-        return this.description;
-    }
-
-    @Override
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    @Override
-    public Class<Category> getCategory() { return (Class<Category>) this.category; }
 }

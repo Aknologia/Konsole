@@ -1,7 +1,7 @@
 package dev.aknologia.konsole.command.utility;
 
 import dev.aknologia.konsole.KonsoleClient;
-import dev.aknologia.konsole.command.UtilityCategory;
+import dev.aknologia.konsole.niflheim.AbstractCommand;
 import dev.aknologia.konsole.niflheim.Category;
 import dev.aknologia.konsole.niflheim.Command;
 import dev.aknologia.konsole.niflheim.arguments.Argument;
@@ -15,22 +15,25 @@ import net.minecraft.util.math.MathHelper;
 
 import java.util.*;
 
-public class HelpCommand implements Command {
-    public String name = "help";
-    public String description = "Shows this help message.";
-    public Class<?> category = UtilityCategory.class;
-    public List<Argument> arguments = List.of(
-            new Argument(
-                    "command|page",
-                    MultipleArgumentType.multiple(
-                            new Argument[]
-                                {
-                                    new Argument("page", IntegerArgumentType.integer(0)),
-                                    new Argument("command", StringArgumentType.word())
-                                }
+public class HelpCommand extends AbstractCommand {
+    public HelpCommand() {
+        super("help",
+                "Shows this help message.",
+                Category.UTILITY,
+                List.of(
+                    new Argument(
+                            "command|page",
+                            MultipleArgumentType.multiple(
+                                    new Argument[]
+                                            {
+                                                    new Argument("page", IntegerArgumentType.integer(0)),
+                                                    new Argument("command", StringArgumentType.word())
+                                            }
+                            )
                     )
             )
-    );
+        );
+    }
 
     private int commandsPerPage = 8;
 
@@ -78,46 +81,4 @@ public class HelpCommand implements Command {
         KonsoleClient.getKonsole().addMessage(new LiteralText(String.join("\n", lines)));
         return 1;
     }
-
-    private boolean isNumber(String val) {
-        try {
-            int x =  Integer.parseInt(val.trim());
-            return true;
-        } catch(NumberFormatException ex) {
-            return false;
-        }
-    }
-
-    @Override
-    public List<Argument> getArguments() {
-        return this.arguments;
-    }
-
-    @Override
-    public void setArguments(List<Argument> arguments) {
-        this.arguments = arguments;
-    }
-
-    @Override
-    public String getName() {
-        return this.name;
-    }
-
-    @Override
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    @Override
-    public String getDescription() {
-        return this.description;
-    }
-
-    @Override
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    @Override
-    public Class<Category> getCategory() { return (Class<Category>) this.category; }
 }

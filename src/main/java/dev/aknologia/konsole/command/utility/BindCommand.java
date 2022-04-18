@@ -1,9 +1,8 @@
 package dev.aknologia.konsole.command.utility;
 
 import dev.aknologia.konsole.KonsoleClient;
-import dev.aknologia.konsole.command.UtilityCategory;
+import dev.aknologia.konsole.niflheim.AbstractCommand;
 import dev.aknologia.konsole.niflheim.Category;
-import dev.aknologia.konsole.niflheim.Command;
 import dev.aknologia.konsole.niflheim.arguments.Argument;
 import dev.aknologia.konsole.niflheim.arguments.KeyArgumentType;
 import dev.aknologia.konsole.niflheim.arguments.StringArgumentType;
@@ -14,14 +13,17 @@ import org.lwjgl.glfw.GLFW;
 
 import java.util.List;
 
-public class BindCommand implements Command {
-    public String name = "bind";
-    public String description = "Bind a key to a specific command.";
-    public Class<?> category = UtilityCategory.class;
-    public List<Argument> arguments = List.of(
-            new Argument("key", KeyArgumentType.keyArg(), true),
-            new Argument("command", StringArgumentType.string(), true)
-    );
+public class BindCommand extends AbstractCommand {
+    public BindCommand() {
+        super("bind",
+                "Bind a key to a specific command.",
+                Category.UTILITY,
+                List.of(
+                    new Argument("key", KeyArgumentType.keyArg(), true),
+                    new Argument("command", StringArgumentType.string(), true)
+                )
+        );
+    }
 
     @Override
     public int run(CommandContext context) throws CommandSyntaxException {
@@ -32,37 +34,4 @@ public class BindCommand implements Command {
         KonsoleClient.BINDS.put(key.getKeyCode(), command.trim());
         return 1;
     }
-
-    @Override
-    public List<Argument> getArguments() {
-        return this.arguments;
-    }
-
-    @Override
-    public void setArguments(List<Argument> arguments) {
-        this.arguments = arguments;
-    }
-
-    @Override
-    public String getName() {
-        return this.name;
-    }
-
-    @Override
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    @Override
-    public String getDescription() {
-        return this.description;
-    }
-
-    @Override
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    @Override
-    public Class<Category> getCategory() { return (Class<Category>) this.category; }
 }

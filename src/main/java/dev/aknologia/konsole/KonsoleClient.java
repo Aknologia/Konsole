@@ -12,6 +12,7 @@ import net.minecraft.client.MinecraftClient;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class KonsoleClient implements ClientModInitializer {
@@ -27,8 +28,8 @@ public class KonsoleClient implements ClientModInitializer {
     private static Konsole konsole;
     private static KonsoleScreen konsoleScreen;
 
-    public static final Map<Integer, String> BINDS = Map.of();
-    public static final Map<String, String> ALIASES = Map.of();
+    public static final Map<Integer, String> BINDS = new HashMap<>();
+    public static final Map<String, String> ALIASES = new HashMap<>();
 
     @Override
     public void onInitializeClient() {
