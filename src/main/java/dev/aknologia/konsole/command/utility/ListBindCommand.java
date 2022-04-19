@@ -1,13 +1,12 @@
 package dev.aknologia.konsole.command.utility;
 
 import dev.aknologia.konsole.KonsoleClient;
+import dev.aknologia.konsole.KonsoleLogger;
 import dev.aknologia.konsole.input.KeyManager;
 import dev.aknologia.konsole.niflheim.AbstractCommand;
 import dev.aknologia.konsole.niflheim.Category;
 import dev.aknologia.konsole.niflheim.context.CommandContext;
 import dev.aknologia.konsole.niflheim.exceptions.CommandSyntaxException;
-import net.minecraft.text.LiteralText;
-
 import java.util.*;
 
 public class ListBindCommand extends AbstractCommand {
@@ -25,7 +24,7 @@ public class ListBindCommand extends AbstractCommand {
             String boundCommand = bindsList.get(keyCode);
             lines.add(String.format("\u00A73%s \u00A7r= \u00A77\"%s\"", KeyManager.KEYS.getKeyName(keyCode), boundCommand));
         }
-        KonsoleClient.getKonsole().addMessage(new LiteralText(String.join("\n", lines)));
+        KonsoleLogger.getInstance().info(lines.size() > 0 ? String.join("\n", lines) : "\u00A7cNo binds registered.");
         return 1;
     }
 }

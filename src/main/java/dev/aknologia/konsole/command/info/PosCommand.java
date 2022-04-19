@@ -1,6 +1,6 @@
 package dev.aknologia.konsole.command.info;
 
-import dev.aknologia.konsole.KonsoleClient;
+import dev.aknologia.konsole.KonsoleLogger;
 import dev.aknologia.konsole.niflheim.AbstractCommand;
 import dev.aknologia.konsole.niflheim.Category;
 import dev.aknologia.konsole.niflheim.context.CommandContext;
@@ -12,7 +12,6 @@ import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.state.property.Property;
-import net.minecraft.text.LiteralText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Util;
 import net.minecraft.util.hit.BlockHitResult;
@@ -126,7 +125,7 @@ public class PosCommand extends AbstractCommand {
             lines.add(String.format("\u00A7nTargeted Entity:\u00A7r %s", Registry.ENTITY_TYPE.getId((client.targetedEntity).getType())));
         }
 
-        KonsoleClient.getKonsole().addMessage(new LiteralText(String.join("\n", lines)));
+        KonsoleLogger.getInstance().info(String.join("\n", lines));
         return 1;
     }
 }

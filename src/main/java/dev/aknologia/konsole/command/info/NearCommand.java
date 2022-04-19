@@ -1,6 +1,6 @@
 package dev.aknologia.konsole.command.info;
 
-import dev.aknologia.konsole.KonsoleClient;
+import dev.aknologia.konsole.KonsoleLogger;
 import dev.aknologia.konsole.niflheim.AbstractCommand;
 import dev.aknologia.konsole.niflheim.Category;
 import dev.aknologia.konsole.niflheim.arguments.Argument;
@@ -10,7 +10,6 @@ import dev.aknologia.konsole.niflheim.exceptions.CommandSyntaxException;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.text.LiteralText;
 import net.minecraft.util.math.Box;
 
 import java.util.ArrayList;
@@ -50,7 +49,7 @@ public class NearCommand extends AbstractCommand {
         });
         List<String> playerNames = new ArrayList<>();
         players.forEach(pl -> playerNames.add(pl.getDisplayName().asString()));
-        KonsoleClient.getKonsole().addMessage(new LiteralText(String.format("\u00A76\u00A7nBox Radius:\u00A7r\u00A7b %s\n\u00A76\u00A7nPlayers:\u00A7r %s\n\u00A76\u00A7nLiving Entities:\u00A7r %s", radius, playerNames.isEmpty() ? "\u00A77\u00A7onone\u00A7r" : String.join(", ", playerNames), entityNames.isEmpty() ? "\u00A77\u00A7onone\u00A7r" : String.join(", ", entityNames))));
+        KonsoleLogger.getInstance().info(String.format("\u00A76\u00A7nBox Radius:\u00A7r\u00A7b %s\n\u00A76\u00A7nPlayers:\u00A7r %s\n\u00A76\u00A7nLiving Entities:\u00A7r %s", radius, playerNames.isEmpty() ? "\u00A77\u00A7onone\u00A7r" : String.join(", ", playerNames), entityNames.isEmpty() ? "\u00A77\u00A7onone\u00A7r" : String.join(", ", entityNames)));
         return 1;
     }
 

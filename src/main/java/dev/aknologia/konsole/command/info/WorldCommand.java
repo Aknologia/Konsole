@@ -1,21 +1,15 @@
 package dev.aknologia.konsole.command.info;
 
-import dev.aknologia.konsole.KonsoleClient;
-import dev.aknologia.konsole.command.InfoCategory;
+import dev.aknologia.konsole.KonsoleLogger;
 import dev.aknologia.konsole.niflheim.AbstractCommand;
 import dev.aknologia.konsole.niflheim.Category;
-import dev.aknologia.konsole.niflheim.Command;
-import dev.aknologia.konsole.niflheim.arguments.Argument;
 import dev.aknologia.konsole.niflheim.context.CommandContext;
 import dev.aknologia.konsole.niflheim.exceptions.CommandSyntaxException;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.world.ClientWorld;
-import net.minecraft.text.LiteralText;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.World;
 import net.minecraft.world.border.WorldBorder;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class WorldCommand extends AbstractCommand {
@@ -69,7 +63,7 @@ public class WorldCommand extends AbstractCommand {
                 borderSize,
                 borderNorth, borderSouth, borderEast, borderWest);
 
-        KonsoleClient.getKonsole().addMessage(new LiteralText(message));
+        KonsoleLogger.getInstance().info(message);
         return 1;
     }
 }

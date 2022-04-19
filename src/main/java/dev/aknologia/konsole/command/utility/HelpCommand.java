@@ -1,6 +1,7 @@
 package dev.aknologia.konsole.command.utility;
 
 import dev.aknologia.konsole.KonsoleClient;
+import dev.aknologia.konsole.KonsoleLogger;
 import dev.aknologia.konsole.niflheim.AbstractCommand;
 import dev.aknologia.konsole.niflheim.Category;
 import dev.aknologia.konsole.niflheim.Command;
@@ -10,7 +11,6 @@ import dev.aknologia.konsole.niflheim.arguments.MultipleArgumentType;
 import dev.aknologia.konsole.niflheim.arguments.StringArgumentType;
 import dev.aknologia.konsole.niflheim.context.CommandContext;
 import dev.aknologia.konsole.niflheim.exceptions.CommandSyntaxException;
-import net.minecraft.text.LiteralText;
 import net.minecraft.util.math.MathHelper;
 
 import java.util.*;
@@ -57,7 +57,7 @@ public class HelpCommand extends AbstractCommand {
         lines.add(String.format("\u00A7lHELP\u00A7r \u00A77> \u00A7b%s", command.getName()));
         lines.add(String.format("\n\u00A7nDescription:\u00A7r\u00A77 %s", command.getDescription()));
         lines.add(String.format("\u00A7nUsage:\u00A7r\u00A77 %s", KonsoleClient.getCommandManager().getDispatcher().getUsage(command)));
-        KonsoleClient.getKonsole().addMessage(new LiteralText(String.join("\n", lines)));
+        KonsoleLogger.getInstance().info(String.join("\n", lines));
         return 1;
     }
 
@@ -78,7 +78,7 @@ public class HelpCommand extends AbstractCommand {
             lines.add(String.format("  \u00A73%s \u00A7f- \u00A77%s", command.getName(), command.getDescription()));
         }
 
-        KonsoleClient.getKonsole().addMessage(new LiteralText(String.join("\n", lines)));
+        KonsoleLogger.getInstance().info(String.join("\n", lines));
         return 1;
     }
 }

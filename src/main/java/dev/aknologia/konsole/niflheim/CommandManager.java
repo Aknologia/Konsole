@@ -1,6 +1,7 @@
 package dev.aknologia.konsole.niflheim;
 
 import dev.aknologia.konsole.KonsoleClient;
+import dev.aknologia.konsole.KonsoleLogger;
 import dev.aknologia.konsole.command.*;
 import dev.aknologia.konsole.convar.*;
 import dev.aknologia.konsole.niflheim.arguments.Argument;
@@ -8,7 +9,6 @@ import dev.aknologia.konsole.niflheim.context.CommandContext;
 import dev.aknologia.konsole.niflheim.exceptions.CommandSyntaxException;
 import net.minecraft.SharedConstants;
 import net.minecraft.text.*;
-import net.minecraft.util.Formatting;
 import net.minecraft.util.Util;
 import org.jetbrains.annotations.Nullable;
 
@@ -27,46 +27,41 @@ public class CommandManager {
         }));
     }
 
-    public void sendError(Text message) {
-        KonsoleClient.getKonsole().addMessage(new LiteralText("").formatted(Formatting.RED).append(message));
-    }
-
     public int execute(String command) {
         try {
             int n = this.dispatcher.execute(command);
             return n;
         } catch(final CommandSyntaxException ex) {
             int i;
-            this.sendError(Texts.toText(ex.getRawMessage()));
+            KonsoleLogger.getInstance().error(Texts.toText(ex.getRawMessage()));
             if(ex.getInput() != null && ex.getCursor() >= 0) {
                 i = Math.min(ex.getInput().length(), ex.getCursor());
-                MutableText mutableText = new LiteralText("").formatted(Formatting.GRAY);
+                StringBuilder stringbuilder = new StringBuilder("\u00a77");
                 if(i > 10) {
-                    mutableText.append("...");
+                    stringbuilder.append("...");
                 }
-                mutableText.append(ex.getInput().substring(Math.max(0, i -10), i));
+                stringbuilder.append(ex.getInput(), Math.max(0, i - 10), i);
                 if( i < ex.getInput().length()) {
-                    MutableText text = new LiteralText(ex.getInput().substring(i)).formatted(Formatting.RED, Formatting.UNDERLINE);
-                    mutableText.append(text);
+                    stringbuilder.append("\u00a7c\u00a7n").append(ex.getInput().substring(i));
                 }
-                mutableText.append(new LiteralText("<--[HERE]").formatted(Formatting.RED, Formatting.ITALIC));
-                this.sendError(mutableText);
+                stringbuilder.append("\u00a7r\u00a7c\u00a7o").append("<--[HERE]");
+                KonsoleLogger.getInstance().error(stringbuilder.toString());
             }
             i = 0;
             return i;
         } catch(final Exception ex) {
             LiteralText i = new LiteralText(ex.getMessage() == null ? ex.getClass().getName() : ex.getMessage());
             if(KonsoleClient.LOG.isDebugEnabled()) {
-                KonsoleClient.LOG.error("[MANAGER] Error while executing '%s': %s", command, ex);
+                KonsoleClient.LOG.error("[MANAGER] Error while executing '%s': %s", command, ex.toString());
                 StackTraceElement[] mutableText = ex.getStackTrace();
                 for (int text = 0; text < Math.min(mutableText.length, 3); ++text) {
                     i.append("\n\n").append(mutableText[text].getMethodName()).append("\n ").append(mutableText[text].getFileName()).append(":").append(String.valueOf(mutableText[text].getLineNumber()));
                 }
             }
-            this.sendError(new TranslatableText("command.failed").styled(style -> style.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, i))));
+            KonsoleLogger.getInstance().error(new TranslatableText("command.failed").styled(style -> style.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, i))));
             if(SharedConstants.isDevelopment) {
-                this.sendError(new LiteralText(Util.getInnermostMessage(ex)));
-                KonsoleClient.LOG.error("'%s' throw an exception: %s", command, ex);
+                KonsoleLogger.getInstance().error(Util.getInnermostMessage(ex));
+                KonsoleClient.LOG.error("'%s' throw an exception: %s", command, ex.toString());
             }
             int n = 0;
             return n;
@@ -95,7 +90,7 @@ public class CommandManager {
             try {
                 convar.set(convar.getArgumentValue(context));
             } catch(IllegalArgumentException error) {
-                KonsoleClient.getKonsole().addMessage(new LiteralText(convar.toString()));
+                KonsoleLogger.getInstance().info(convar.toString());
             }
 
             return 1;

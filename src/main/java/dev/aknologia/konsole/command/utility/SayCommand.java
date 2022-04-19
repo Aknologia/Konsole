@@ -19,6 +19,7 @@ public class SayCommand extends AbstractCommand {
 
     @Override
     public int run(CommandContext context) throws CommandSyntaxException {
+        assert MinecraftClient.getInstance().player != null;
         MinecraftClient.getInstance().player.sendChatMessage(context.getArgument("message", String.class));
         return 1;
     }

@@ -3,6 +3,7 @@ package dev.aknologia.konsole.command.info;
 import com.mojang.authlib.properties.Property;
 import com.mojang.authlib.properties.PropertyMap;
 import dev.aknologia.konsole.KonsoleClient;
+import dev.aknologia.konsole.KonsoleLogger;
 import dev.aknologia.konsole.niflheim.AbstractCommand;
 import dev.aknologia.konsole.niflheim.Category;
 import dev.aknologia.konsole.niflheim.arguments.Argument;
@@ -57,7 +58,7 @@ public class WhoIsCommand extends AbstractCommand {
                 stringProperties.size() > 0 ? "\n\n\u00A76\u00A7nProperties:\u00A7r\n" + String.join("\n", stringProperties) : "",
                 player.getProfile().getId());
 
-        KonsoleClient.getKonsole().addMessage(new LiteralText(profile));
+        KonsoleLogger.getInstance().info(profile);
         return 1;
     }
 }

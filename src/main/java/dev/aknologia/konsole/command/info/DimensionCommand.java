@@ -1,6 +1,6 @@
 package dev.aknologia.konsole.command.info;
 
-import dev.aknologia.konsole.KonsoleClient;
+import dev.aknologia.konsole.KonsoleLogger;
 import dev.aknologia.konsole.niflheim.AbstractCommand;
 import dev.aknologia.konsole.niflheim.Category;
 import dev.aknologia.konsole.niflheim.context.CommandContext;
@@ -8,7 +8,6 @@ import dev.aknologia.konsole.niflheim.exceptions.CommandSyntaxException;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.DimensionEffects;
 import net.minecraft.client.world.ClientWorld;
-import net.minecraft.text.LiteralText;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
 
@@ -59,7 +58,7 @@ public class DimensionCommand extends AbstractCommand {
         List<String> listParam = new ArrayList<>();
         parameters.keySet().forEach(k -> listParam.add(String.format("    \u00A77- %s:\u00A7%s %s", k, parameters.get(k) ? "a" : "c", parameters.get(k))));
         message = message.concat(String.join("\n", listParam));
-        KonsoleClient.getKonsole().addMessage(new LiteralText(message));
+        KonsoleLogger.getInstance().info(message);
         return 1;
     }
 }

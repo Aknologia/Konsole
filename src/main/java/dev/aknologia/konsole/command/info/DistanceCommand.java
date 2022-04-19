@@ -1,6 +1,6 @@
 package dev.aknologia.konsole.command.info;
 
-import dev.aknologia.konsole.KonsoleClient;
+import dev.aknologia.konsole.KonsoleLogger;
 import dev.aknologia.konsole.niflheim.AbstractCommand;
 import dev.aknologia.konsole.niflheim.Category;
 import dev.aknologia.konsole.niflheim.arguments.Argument;
@@ -8,7 +8,6 @@ import dev.aknologia.konsole.niflheim.arguments.DoubleArgumentType;
 import dev.aknologia.konsole.niflheim.context.CommandContext;
 import dev.aknologia.konsole.niflheim.exceptions.CommandSyntaxException;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.text.LiteralText;
 import net.minecraft.util.math.Vec3d;
 
 import java.util.List;
@@ -32,12 +31,13 @@ public class DistanceCommand extends AbstractCommand {
     @Override
     public int run(CommandContext context) throws CommandSyntaxException {
         Vec3d firstPos = new Vec3d(DoubleArgumentType.getDouble(context, "x1"), DoubleArgumentType.getDouble(context, "y1"), DoubleArgumentType.getDouble(context, "z1"));
+        assert MinecraftClient.getInstance().player != null;
         Vec3d secondPos = MinecraftClient.getInstance().player.getPos();
         try {
             secondPos = new Vec3d(DoubleArgumentType.getDouble(context, "x2"), DoubleArgumentType.getDouble(context, "y2"), DoubleArgumentType.getDouble(context, "z2"));
         } catch(IllegalArgumentException ignored) { }
         double distance = Math.sqrt(Math.pow(secondPos.getX() - firstPos.getX(), 2) + Math.pow(secondPos.getY() - firstPos.getY(), 2) + Math.pow(secondPos.getZ() - firstPos.getZ(), 2));
-        KonsoleClient.getKonsole().addMessage(new LiteralText(String.format("(%s) to (%s)\n\u00A76\u00A7nDistance:\u00A7r %.2f block(s)", this.vec3dToString(firstPos), this.vec3dToString(secondPos), distance)));
+        KonsoleLogger.getInstance().info(String.format("(%s) to (%s)\n\u00A76\u00A7nDistance:\u00A7r %.2f block(s)", this.vec3dToString(firstPos), this.vec3dToString(secondPos), distance));
         return 1;
     }
 }

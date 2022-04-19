@@ -1,8 +1,8 @@
 package dev.aknologia.konsole.niflheim;
 
 import dev.aknologia.konsole.KonsoleClient;
+import dev.aknologia.konsole.KonsoleLogger;
 import dev.aknologia.konsole.niflheim.arguments.Argument;
-import dev.aknologia.konsole.niflheim.arguments.ArgumentType;
 import dev.aknologia.konsole.niflheim.context.CommandContext;
 import dev.aknologia.konsole.niflheim.context.CommandContextBuilder;
 import dev.aknologia.konsole.niflheim.context.StringRange;
@@ -10,8 +10,6 @@ import dev.aknologia.konsole.niflheim.exceptions.CommandSyntaxException;
 import dev.aknologia.konsole.niflheim.suggestion.Suggestion;
 import dev.aknologia.konsole.niflheim.suggestion.SuggestionContext;
 import dev.aknologia.konsole.niflheim.suggestion.Suggestions;
-import net.minecraft.text.LiteralText;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
@@ -87,7 +85,7 @@ public class CommandDispatcher {
                 consumer.onCommandComplete(context, false, 0);
                 throw ex;
             } catch(final IllegalArgumentException ex) {
-                KonsoleClient.getCommandManager().sendError(new LiteralText("Missing required argument"));
+                KonsoleLogger.getInstance().error("Missing required argument");
             } catch(Exception ex) {
                 KonsoleClient.LOG.warn("Got error while running command: %s", ex);
             }
