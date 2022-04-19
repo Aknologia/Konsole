@@ -24,19 +24,19 @@ public abstract class AbstractCommand implements Command {
   }
 
   public String getName() {
-    return name;
+    return this.name;
   }
 
   public String getDescription() {
-    return description;
+    return this.description;
   }
 
   public Class<Category> getCategory() {
-    return (Class<Category>) category;
+    return (Class<Category>) this.category;
   }
 
   public List<Argument> getArguments() {
-    return arguments;
+    return this.arguments;
   }
 
   public void setName(String name) {
