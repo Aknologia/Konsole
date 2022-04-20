@@ -10,6 +10,7 @@ import dev.aknologia.konsole.niflheim.exceptions.CommandSyntaxException;
 import dev.aknologia.konsole.niflheim.suggestion.Suggestion;
 import dev.aknologia.konsole.niflheim.suggestion.SuggestionContext;
 import dev.aknologia.konsole.niflheim.suggestion.Suggestions;
+import net.minecraft.text.TranslatableText;
 
 import java.util.*;
 
@@ -24,15 +25,15 @@ public class CommandDispatcher {
     private static final String USAGE_REQUIRED_CLOSE = ">";
     private static final String USAGE_OR = "|";
 
-    private List<Category> categories = new ArrayList<>();
-    private HashMap<String, ConsoleVariable<?>> convars = new HashMap<>();
+    private final List<Category> CATEGORIES = new ArrayList<>();
+    private final HashMap<String, ConsoleVariable<?>> CONVARS = new HashMap<>();
 
     private ResultConsumer consumer = (c, s, r) -> {
     };
 
     public HashMap<String, Command> getCommands() {
         HashMap<String, Command> commands = new HashMap<>();
-        this.categories.forEach(category -> {
+        this.CATEGORIES.forEach(category -> {
             category.getCommands().forEach(command -> commands.put(command.getName(), command));
         });
         return commands;
@@ -40,15 +41,15 @@ public class CommandDispatcher {
     public Command getCommand(String name) {
         return this.getCommands().get(name);
     }
-    public ConsoleVariable<?> getConVar(String name) { return this.convars.get(name); }
+    public ConsoleVariable<?> getConVar(String name) { return this.CONVARS.get(name); }
 
     public void register(Category category) {
-        this.categories.add(category);
+        this.CATEGORIES.add(category);
     }
 
     public void register(ConsoleVariable<?> convar) {
-        if(this.convars.keySet().contains(convar.getName())) throw new IllegalArgumentException("ConVar '" + convar.getName() + "' already defined.");
-        this.convars.put(convar.getName(), convar);
+        if(this.CONVARS.containsKey(convar.getName())) throw new IllegalArgumentException("ConVar '" + convar.getName() + "' already defined.");
+        this.CONVARS.put(convar.getName(), convar);
     }
 
     public void setConsumer(final ResultConsumer consumer) { this.consumer = consumer; }
@@ -64,6 +65,7 @@ public class CommandDispatcher {
 
     public int execute(final ParseResults parse) throws CommandSyntaxException {
         if(parse.getReader().canRead()) {
+            System.out.println(parse.getExceptions().size() + " exceptions");
             if(parse.getExceptions().size() == 1) {
                 throw parse.getExceptions().values().iterator().next();
             } else if(parse.getContext().getRange().isEmpty()) {
@@ -85,7 +87,7 @@ public class CommandDispatcher {
                 consumer.onCommandComplete(context, false, 0);
                 throw ex;
             } catch(final IllegalArgumentException ex) {
-                KonsoleLogger.getInstance().error("Missing required argument");
+                KonsoleLogger.getInstance().error(new TranslatableText("konsole.error.missing_argument"));
             } catch(Exception ex) {
                 KonsoleClient.LOG.warn("Got error while running command: %s", ex);
             }
@@ -107,59 +109,53 @@ public class CommandDispatcher {
     }
 
     public ParseResults parse(final CommandContextBuilder contextSoFar, final StringReader originalReader) throws CommandSyntaxException {
-        Map<Integer, CommandSyntaxException> errors = null;
+        Map<Integer, CommandSyntaxException> errors = new LinkedHashMap<>();
 
         final String commandName = originalReader.readUnquotedString();
 
         Command command = this.getCommand(commandName);
         ConsoleVariable<?> convar;
         if(command == null) {
-            convar = this.convars.get(commandName);
+            convar = this.CONVARS.get(commandName);
             if(convar != null) command = CommandManager.fromConVar(convar);
             else throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.dispatcherUnknownCommand().createWithContext(originalReader);
         }
 
         contextSoFar.withCommand(command);
-        ListIterator<Argument> listIterator = command.getArguments().listIterator();
 
-        while (listIterator.hasNext()) {
-            Argument arg = listIterator.next();
+        for (Argument arg : command.getArguments()) {
             try {
                 int start = originalReader.getCursor();
                 Object resultArg = arg.getArgumentType().parse(originalReader);
                 int end = originalReader.getCursor();
-                if(resultArg instanceof String && resultArg.toString().trim().length() == 0 && !arg.isRequired()) {
-                    if(errors == null) errors = new LinkedHashMap<>();
+                if (resultArg instanceof String && resultArg.toString().trim().length() == 0 && !arg.isRequired()) {
                     CommandSyntaxException ex = CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerExpectedStartOfQuote().createWithContext(originalReader);
                     errors.put(originalReader.getCursor(), ex);
                     throw ex;
                 }
                 ParsedArgument<?> parsedArg = new ParsedArgument<>(start, end, resultArg);
                 contextSoFar.withArgument(arg.getName(), parsedArg);
-            } catch(final CommandSyntaxException ex) {
-                if(!arg.isRequired()) break;
-                if(errors == null) errors = new LinkedHashMap<>();
+            } catch (final CommandSyntaxException ex) {
                 errors.put(originalReader.getCursor(), ex);
-                continue;
             }
         }
 
-        return new ParseResults(contextSoFar, originalReader, errors == null ? Collections.emptyMap() : errors);
+        System.out.println("Errors: " + errors.size());
+
+        return new ParseResults(contextSoFar, originalReader, errors.size() < 1 ? Collections.emptyMap() : errors);
     }
 
     public String getUsage(final Command command) {
-        String usage = command.getName();
-        ListIterator<Argument> iterator = command.getArguments().listIterator();
-        while (iterator.hasNext()) {
-            Argument arg = iterator.next();
-            usage += ARGUMENT_SEPARATOR;
-            if(arg.isRequired()) usage += USAGE_REQUIRED_OPEN;
-            else usage += USAGE_OPTIONAL_OPEN;
-            usage += arg.getName();
-            if(arg.isRequired()) usage += USAGE_REQUIRED_CLOSE;
-            else usage += USAGE_OPTIONAL_CLOSE;
+        StringBuilder usage = new StringBuilder(command.getName());
+        for (Argument arg : command.getArguments()) {
+            usage.append(ARGUMENT_SEPARATOR);
+            if (arg.isRequired()) usage.append(USAGE_REQUIRED_OPEN);
+            else usage.append(USAGE_OPTIONAL_OPEN);
+            usage.append(arg.getName());
+            if (arg.isRequired()) usage.append(USAGE_REQUIRED_CLOSE);
+            else usage.append(USAGE_OPTIONAL_CLOSE);
         }
-        return usage;
+        return usage.toString();
     }
 
     public Suggestions getCompletionSuggestions(final ParseResults parse, final String fullInput) {
@@ -196,7 +192,7 @@ public class CommandDispatcher {
             } else list2.add(new Suggestion(range, key));
         }
         suggestions.addAll(list2);
-        System.out.println(range);
+
         return new Suggestions(range, suggestions);
     }
 
@@ -204,12 +200,10 @@ public class CommandDispatcher {
         StringRange range = new StringRange(0, cursor);
         List<Suggestion> suggestions = new ArrayList<>();
         List<String> commands = new ArrayList<>(KonsoleClient.getCommandManager().getDispatcher().getCommands().keySet());
-        commands.addAll(new ArrayList<>(KonsoleClient.getCommandManager().getDispatcher().convars.keySet()));
+        commands.addAll(new ArrayList<>(KonsoleClient.getCommandManager().getDispatcher().CONVARS.keySet()));
         List<Suggestion> list2 = new ArrayList<>();
-        Iterator<String> iterator = commands.iterator();
-        while(iterator.hasNext()) {
-            String key = iterator.next();
-            if(key.toLowerCase(Locale.ROOT).startsWith(truncatedInputLowerCase)) {
+        for (String key : commands) {
+            if (key.toLowerCase(Locale.ROOT).startsWith(truncatedInputLowerCase)) {
                 suggestions.add(new Suggestion(range, key));
             } else list2.add(new Suggestion(range, key));
         }

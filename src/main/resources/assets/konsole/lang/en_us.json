@@ -1,3 +1,38 @@
 {
-  "key.konsole.open-console": "Open Console"
+  "key.konsole.open-console": "Open Console",
+
+  "konsole.misc.here": "here",
+
+  "konsole.error.unknown": "Something went wrong.",
+  "konsole.error.unknown_command": "Unknown command",
+  "konsole.error.unknown_argument": "Unknown argument",
+  "konsole.error.missing_argument": "Missing required argument",
+  "konsole.error.expected_separator": "Expected whitespace to end one argument, but found trailing data",
+  "konsole.error.parse_exception": "Could not parse command: %s",
+
+  "konsole.error.double_too_small": "Double must not be less than %d, found %d",
+  "konsole.error.double_too_big": "Double must not be greater than %d, found %d",
+  "konsole.error.float_too_small": "Float must not be less than %d, found %d",
+  "konsole.error.float_too_big": "Float must not be greater than %d, found %d",
+  "konsole.error.integer_too_small": "Integer must not be less than %d, found %d",
+  "konsole.error.integer_too_big": "Integer must not be greater than %d, found %d",
+  "konsole.error.long_too_small": "Long must not be less than %d, found %d",
+  "konsole.error.long_too_big": "Long must not be greater than %d, found %d",
+
+  "konsole.error.literal_incorrect": "Expected literal %s",
+
+  "konsole.error.expected_start_of_quote": "Expected quote to start a string",
+  "konsole.error.expected_end_of_quote": "Expected quote to end a string",
+  "konsole.error.invalid_escape": "Invalid escape sequence '%s' in quoted string",
+  "konsole.error.invalid_bool": "Invalid boolean, expected true or false but found '%s'",
+  "konsole.error.expected_bool": "Expected boolean",
+  "konsole.error.invalid_int": "Invalid integer '%s'",
+  "konsole.error.expected_int": "Expected integer",
+  "konsole.error.invalid_long": "Invalid long '%s'",
+  "konsole.error.expected_long": "Expected long",
+  "konsole.error.invalid_double": "Invalid double '%s'",
+  "konsole.error.expected_double": "Expected double",
+  "konsole.error.invalid_float": "Invalid float '%s'",
+  "konsole.error.expected_float": "Expected float",
+  "konsole.error.expected_symbol": "Expected '%s'"
 }
