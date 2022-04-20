@@ -2,10 +2,8 @@ package dev.aknologia.konsole.mixin;
 
 import dev.aknologia.konsole.KonsoleClient;
 import dev.aknologia.konsole.KonsoleLogger;
-import dev.aknologia.konsole.console.Konsole;
 import net.minecraft.client.gui.hud.ChatHudListener;
 import net.minecraft.network.MessageType;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
