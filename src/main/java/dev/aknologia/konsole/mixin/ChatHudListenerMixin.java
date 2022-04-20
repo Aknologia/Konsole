@@ -1,6 +1,7 @@
 package dev.aknologia.konsole.mixin;
 
 import dev.aknologia.konsole.KonsoleClient;
+import dev.aknologia.konsole.KonsoleLogger;
 import dev.aknologia.konsole.console.Konsole;
 import net.minecraft.client.gui.hud.ChatHudListener;
 import net.minecraft.network.MessageType;
@@ -11,6 +12,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import java.util.Objects;
 import java.util.UUID;
 
 @Mixin(ChatHudListener.class)
@@ -20,8 +22,11 @@ public class ChatHudListenerMixin {
             at = @At("HEAD")
     )
     public void onChatMessage(MessageType messageType, Text message, UUID sender, CallbackInfo ci) {
-        if(messageType == MessageType.CHAT) {
-            KonsoleClient.getKonsole().addMessage(new LiteralText("\u00A7a[CHAT]\u00A7r ").append(message), false);
-        }
+        int chatLogLevel = (int) Objects.requireNonNull(KonsoleClient.getKonsole().getConvarValue("chat_log_level"));
+        if (chatLogLevel == 0) return;
+
+        if(chatLogLevel > 0 && messageType == MessageType.SYSTEM) KonsoleLogger.getInstance().chat(messageType, message);
+        else if(chatLogLevel > 1 && messageType == MessageType.GAME_INFO) KonsoleLogger.getInstance().chat(messageType, message);
+        else if(chatLogLevel > 2 && messageType == MessageType.CHAT) KonsoleLogger.getInstance().chat(messageType, message);
     }
 }

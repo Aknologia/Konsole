@@ -117,5 +117,7 @@ public class CommandManager {
         new ChunkBorderConVar().register(this.dispatcher);
         new HitboxConVar().register(this.dispatcher);
         new HUDHiddenConVar().register(this.dispatcher);
+
+        new ChatLogLevelConVar().register(this.dispatcher);
     }
 }

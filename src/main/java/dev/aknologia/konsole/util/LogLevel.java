@@ -3,6 +3,7 @@ package dev.aknologia.konsole.util;
 public enum LogLevel {
   DEBUG(Color.DARK_GRAY, Color.GRAY),
   INFO(Color.GREEN),
+  CHAT(Color.AQUA),
   WARNING(Color.YELLOW),
   ERROR(Color.RED, Color.RED);
 

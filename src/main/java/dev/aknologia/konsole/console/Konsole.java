@@ -133,4 +133,8 @@ public class Konsole {
     public void run(@NotNull String text) {
         KonsoleClient.getCommandManager().execute(text);
     }
+
+    public Object getConvarValue(String name) {
+        return Objects.requireNonNull(KonsoleClient.getCommandManager().getDispatcher().getConVar(name)).get();
+    }
 }
