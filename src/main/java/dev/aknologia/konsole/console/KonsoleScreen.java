@@ -24,11 +24,13 @@ import java.util.ListIterator;
 @Environment(value=EnvType.CLIENT)
 public class KonsoleScreen extends Screen {
     private static final Text USAGE_TEXT = new TranslatableText("konsole.usage");
-    private String konsoleLastMessage = "";
+    private final String konsoleLastMessage = "";
     private int messageHistoryOffset = 0;
     protected TextFieldWidget konsoleField;
     private String originalKonsoleText;
     private final SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
+    public float scale = 1.0F;
+    public float multiplier = 1.0F / scale;
     KonsoleSuggestor konsoleSuggestor;
 
     public KonsoleScreen(String string) {
@@ -45,8 +47,10 @@ public class KonsoleScreen extends Screen {
     @Override
     protected void init() {
         this.originalKonsoleText = KonsoleClient.getKonsole().originalMessage;
+        this.scale = this.getScale(); this.multiplier = 1.0F / this.scale;
+        assert this.client != null;
         this.client.keyboard.setRepeatEvents(true);
-        this.konsoleField = new TextFieldWidget(this.textRenderer, 4, this.height - 12, this.width - 4, 12, (Text) new TranslatableText("konsole.editBox"));
+        this.konsoleField = new TextFieldWidget(this.textRenderer, 4, this.height() - 12, this.width() - 4, 12, new TranslatableText("konsole.editBox"));
         this.konsoleField.setMaxLength(256);
         this.konsoleField.setDrawsBackground(false);
         this.konsoleField.setText(this.originalKonsoleText);
@@ -72,6 +76,7 @@ public class KonsoleScreen extends Screen {
 
     @Override
     public void removed() {
+        assert this.client != null;
         this.client.keyboard.setRepeatEvents(false);
         KonsoleClient.getKonsole().resetScroll();
     }
@@ -87,6 +92,7 @@ public class KonsoleScreen extends Screen {
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        assert this.client != null;
         if(((KeyboardMixinInterface)this.client.keyboard).isCtrlPressed()) {
             if(keyCode == GLFW.GLFW_KEY_A){
                 this.konsoleField.setSelectionStart(0);
@@ -149,7 +155,7 @@ public class KonsoleScreen extends Screen {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if(this.konsoleSuggestor.mouseClicked(mouseX, mouseX, button)) return true;
+        if(this.konsoleSuggestor.mouseClicked(mouseX, mouseY, button)) return true;
         if(this.konsoleField.mouseClicked(mouseX, mouseY, button)) {
             return true;
         }
@@ -179,17 +185,24 @@ public class KonsoleScreen extends Screen {
         this.messageHistoryOffset = j;
     }
 
+    public void onScaleChanged() {
+        this.init();
+    }
+
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+        matrices.scale(this.scale, this.scale, this.scale);
         this.setFocused(this.konsoleField);
         this.konsoleField.setTextFieldFocused(true);
+
+        int width = this.width(); int height = this.height();
 
         int backgroundColor = 0xA0000000;
 
         // Fill output background
-        KonsoleScreen.fill(matrices, 2, 2, this.width - 2, this.height - 16, backgroundColor);
+        KonsoleScreen.fill(matrices, 2, 2, width - 2, height - 16, backgroundColor);
         // Fill field background
-        KonsoleScreen.fill(matrices, 2, this.height - 14, this.width - 2, this.height - 2, backgroundColor);
+        KonsoleScreen.fill(matrices, 2, height - 14, width - 2, height - 2, backgroundColor);
 
         this.konsoleField.render(matrices, mouseX, mouseY, delta);
 
@@ -208,7 +221,7 @@ public class KonsoleScreen extends Screen {
                     this.textRenderer,
                     new LiteralText(String.format("\u00A77\u00A7o%s\u00A7r ", timestamp)),
                     this.originX()*2,
-                    this.height - 18 - i*(KonsoleClient.getKonsole().spaceBetweenLines + this.textRenderer.fontHeight) - this.textRenderer.fontHeight,
+                    height - 18 - i*(KonsoleClient.getKonsole().spaceBetweenLines + this.textRenderer.fontHeight) - this.textRenderer.fontHeight,
                     0xFFFFFF
             );
         }
@@ -225,7 +238,7 @@ public class KonsoleScreen extends Screen {
                     this.textRenderer,
                     line.getText(),
                     3*this.originX() + this.getTimestampWidth(),
-                    this.height - 18 - i*(KonsoleClient.getKonsole().spaceBetweenLines + this.textRenderer.fontHeight) - this.textRenderer.fontHeight,
+                    height - 18 - i*(KonsoleClient.getKonsole().spaceBetweenLines + this.textRenderer.fontHeight) - this.textRenderer.fontHeight,
                     0xFFFFFF
             );
         }
@@ -250,13 +263,24 @@ public class KonsoleScreen extends Screen {
 
     public int originY() { return 2; }
 
-    public int getBoxWidth() { return this.width() - this.originX()*4; }
+    public int getBoxWidth() { return this.width() - this.originX()*6; }
 
-    private int width() {
-        return this.client.getWindow().getScaledWidth() - this.originX()*2;
+    public int width() {
+        assert this.client != null;
+        return Math.round(this.client.getWindow().getScaledWidth() * this.multiplier);
+    }
+
+    public int height() {
+        assert this.client != null;
+        return Math.round(this.client.getWindow().getScaledHeight() * this.multiplier);
+    }
+
+    private float getScale() {
+        return (float) KonsoleClient.getKonsole().getConvarValue("scale");
     }
 
     public int getTimestampWidth() {
+        assert this.client != null;
         return this.client.textRenderer.getWidth("00:00:00");
     }
 
@@ -268,7 +292,7 @@ public class KonsoleScreen extends Screen {
         int maxSize = KonsoleClient.getKonsole().getVisibleLineCount();
         List<KonsoleLine<Text>> lines = KonsoleClient.getKonsole().messages;
         if(lines.isEmpty()) return lines;
-        if(lines.size() < KonsoleClient.getKonsole().scrolledLines + maxSize) return lines.subList(lines.size() - maxSize - 1 < 0 ? 0 : lines.size() - maxSize - 1, lines.size());
+        if(lines.size() < KonsoleClient.getKonsole().scrolledLines + maxSize) return lines.subList(Math.max(lines.size() - maxSize - 1, 0), lines.size());
         return lines.subList(KonsoleClient.getKonsole().scrolledLines, KonsoleClient.getKonsole().scrolledLines + maxSize);
     }
 
@@ -280,7 +304,7 @@ public class KonsoleScreen extends Screen {
         builder.put(NarrationPart.USAGE, USAGE_TEXT);
         String string = this.konsoleField.getText();
         if (!string.isEmpty()) {
-            builder.nextMessage().put(NarrationPart.TITLE, (Text)new TranslatableText("chat_screen.message", string));
+            builder.nextMessage().put(NarrationPart.TITLE, new TranslatableText("chat_screen.message", string));
         }
     }
 }

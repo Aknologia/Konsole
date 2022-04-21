@@ -82,7 +82,7 @@ public class CommandContextBuilder {
                 break;
             }
         }
-        System.out.println(lastStart);
+
         return new SuggestionContext(this.command, suggestedArg, lastStart);
     }
 }

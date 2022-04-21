@@ -30,7 +30,7 @@ public class Suggestion implements Comparable<Suggestion> {
         }
         final StringBuilder result = new StringBuilder();
         if(range.getStart() > 0) {
-            result.append(input.substring(0, range.getStart()));
+            result.append(input, 0, range.getStart());
         }
         result.append(text);
         if(range.getEnd() < input.length()) {
@@ -68,11 +68,11 @@ public class Suggestion implements Comparable<Suggestion> {
         if(range.equals(this.range)) return this;
         final StringBuilder result = new StringBuilder();
         if(range.getStart() < this.range.getStart()) {
-            result.append(command.substring(range.getStart(), this.range.getStart()));
+            result.append(command, range.getStart(), this.range.getStart());
         }
         result.append(text);
         if(range.getEnd() > this.range.getEnd()) {
-            result.append(command.substring(this.range.getEnd(), range.getEnd()));
+            result.append(command, this.range.getEnd(), range.getEnd());
         }
         return new Suggestion(range, result.toString(), tooltip);
     }

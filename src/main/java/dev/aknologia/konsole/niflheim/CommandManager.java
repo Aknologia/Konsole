@@ -118,5 +118,6 @@ public class CommandManager {
         new HUDHiddenConVar().register(this.dispatcher);
 
         new ChatLogLevelConVar().register(this.dispatcher);
+        new ScaleConVar().register(this.dispatcher);
     }
 }

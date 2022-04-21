@@ -71,6 +71,7 @@ public class KonsoleClient implements ClientModInitializer {
     }
 
     public static KonsoleScreen getKonsoleScreen() {
+        if(MinecraftClient.getInstance().currentScreen instanceof KonsoleScreen) konsoleScreen = (KonsoleScreen) MinecraftClient.getInstance().currentScreen;
         return konsoleScreen;
     }
 }

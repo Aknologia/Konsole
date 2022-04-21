@@ -65,7 +65,6 @@ public class CommandDispatcher {
 
     public int execute(final ParseResults parse) throws CommandSyntaxException {
         if(parse.getReader().canRead()) {
-            System.out.println(parse.getExceptions().size() + " exceptions");
             if(parse.getExceptions().size() == 1) {
                 throw parse.getExceptions().values().iterator().next();
             } else if(parse.getContext().getRange().isEmpty()) {
@@ -139,8 +138,6 @@ public class CommandDispatcher {
                 errors.put(originalReader.getCursor(), ex);
             }
         }
-
-        System.out.println("Errors: " + errors.size());
 
         return new ParseResults(contextSoFar, originalReader, errors.size() < 1 ? Collections.emptyMap() : errors);
     }

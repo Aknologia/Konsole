@@ -31,10 +31,7 @@ import net.minecraft.util.math.Vec2f;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
@@ -46,7 +43,7 @@ public class KonsoleSuggestor {
     private static final Style INFO_STYLE = Style.EMPTY.withColor(Formatting.GRAY);
     private static final List<Style> HIGHLIGHT_STYLES = Stream.of(Formatting.AQUA, Formatting.YELLOW, Formatting.GREEN, Formatting.LIGHT_PURPLE, Formatting.GOLD).map(Style.EMPTY::withColor).collect(ImmutableList.toImmutableList());
     final MinecraftClient client;
-    final Screen owner;
+    final KonsoleScreen owner;
     final TextFieldWidget textField;
     final TextRenderer textRenderer;
     final int inWindowIndexOffset;
@@ -65,7 +62,7 @@ public class KonsoleSuggestor {
     private boolean windowActive;
     boolean completingSuggestions;
 
-    public KonsoleSuggestor(MinecraftClient minecraftClient, Screen screen, TextFieldWidget textFieldWidget, TextRenderer textRenderer, int i, int j, boolean bl, int k) {
+    public KonsoleSuggestor(MinecraftClient minecraftClient, KonsoleScreen screen, TextFieldWidget textFieldWidget, TextRenderer textRenderer, int i, int j, boolean bl, int k) {
         this.client = minecraftClient;
         this.owner = screen;
         this.textField = textFieldWidget;
@@ -109,7 +106,7 @@ public class KonsoleSuggestor {
                 i = Math.max(i, this.textRenderer.getWidth(suggestion.getText()));
             }
             int j = MathHelper.clamp(this.textField.getCharacterX(suggestions.getRange().getStart()), 0, this.textField.getCharacterX(0) + this.textField.getInnerWidth() - i);
-            int suggestion = this.konsoleScreenSized ? this.owner.height - 12 : 72;
+            int suggestion = this.konsoleScreenSized ? this.owner.height() - 12 : 72;
             this.window = new SuggestionWindow(j, suggestion, i, this.sortSuggestions(suggestions));
         }
     }
@@ -122,7 +119,6 @@ public class KonsoleSuggestor {
         for(Suggestion suggestion : suggestions.getList()) {
             if(suggestion.getText().startsWith(string2) || suggestion.getText().startsWith("minecraft:" + string2)) {
                 list.add(suggestion);
-                continue;
             }
         }
         return list;
@@ -151,7 +147,7 @@ public class KonsoleSuggestor {
         if(this.parse == null) {
             try {
                 this.parse = commandDispatcher.parse(stringReader);
-            } catch(CommandSyntaxException ex) {
+            } catch(CommandSyntaxException ignored) {
 
             }
         }
@@ -183,6 +179,7 @@ public class KonsoleSuggestor {
 
     private void show() {
         if(this.parse != null && this.textField.getCursor() == this.textField.getText().length()) {
+            assert this.suggestions != null;
             if(this.suggestions.isEmpty() && !this.parse.getExceptions().isEmpty()) {
                 int i = 0;
                 for(Map.Entry<Integer, CommandSyntaxException> entry : this.parse.getExceptions().entrySet()) {
@@ -197,16 +194,20 @@ public class KonsoleSuggestor {
                     this.messages.add(KonsoleSuggestor.formatException(CommandSyntaxException.BUILT_IN_EXCEPTIONS.dispatcherUnknownCommand().create()));
                 }
             } else if(this.parse.getReader().canRead()) {
-                this.messages.add(KonsoleSuggestor.formatException(CommandManager.getException(this.parse)));
+                this.messages.add(KonsoleSuggestor.formatException(Objects.requireNonNull(CommandManager.getException(this.parse))));
             }
         }
         this.x = 0;
         this.width = this.owner.width;
 
-        if(this.messages.isEmpty() && this.suggestions.isEmpty()) {
-            this.showUsages(Formatting.GRAY);
+        if(this.messages.isEmpty()) {
+            assert this.suggestions != null;
+            if (this.suggestions.isEmpty()) {
+                this.showUsages(Formatting.GRAY);
+            }
         }
         this.window = null;
+        assert this.suggestions != null;
         if(!this.suggestions.isEmpty()) {
             this.showSuggestion();
         }

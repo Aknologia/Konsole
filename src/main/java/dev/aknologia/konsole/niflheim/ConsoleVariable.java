@@ -7,9 +7,9 @@ import dev.aknologia.konsole.niflheim.context.CommandContext;
 import java.util.function.Function;
 
 public class ConsoleVariable<T> {
-    private String name;
-    private String description;
-    private Class<T> type;
+    private final String name;
+    private final String description;
+    private final Class<T> type;
     private T value;
 
     private Function callback;
@@ -87,6 +87,7 @@ enum ConVarType {
     INTEGER(IntegerArgumentType.class),
     BOOLEAN(BoolArgumentType.class),
     DOUBLE(DoubleArgumentType.class),
+    FLOAT(FloatArgumentType.class),
     LONG(LongArgumentType.class);
 
     public final Class<?> ARGUMENT_TYPE;
@@ -105,6 +106,8 @@ enum ConVarType {
                 return ConVarType.BOOLEAN;
             case "Double":
                 return ConVarType.DOUBLE;
+            case "Float":
+                return ConVarType.FLOAT;
             case "Long":
                 return ConVarType.LONG;
             default:
@@ -126,6 +129,11 @@ enum ConVarType {
             if(argumentParams.length == 1) return DoubleArgumentType.doubleArg((int) argumentParams[0]);
             else if(argumentParams.length > 1) return DoubleArgumentType.doubleArg((int) argumentParams[0], (int) argumentParams[1]);
             else return DoubleArgumentType.doubleArg();
+        }
+        if(pkg.isAssignableFrom(FloatArgumentType.class)) {
+            if(argumentParams.length == 1) return FloatArgumentType.floatArg((int) argumentParams[0]);
+            else if(argumentParams.length > 1) return FloatArgumentType.floatArg((int) argumentParams[0], (int) argumentParams[1]);
+            else return FloatArgumentType.floatArg();
         }
         if(pkg.isAssignableFrom(LongArgumentType.class)) {
             if(argumentParams.length == 1) return LongArgumentType.longArg((int) argumentParams[0]);
