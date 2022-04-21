@@ -3,6 +3,7 @@ package dev.aknologia.konsole.niflheim;
 import dev.aknologia.konsole.KonsoleClient;
 import dev.aknologia.konsole.niflheim.arguments.*;
 import dev.aknologia.konsole.niflheim.context.CommandContext;
+import dev.aknologia.konsole.niflheim.exceptions.CommandSyntaxException;
 
 import java.util.function.Function;
 
@@ -59,7 +60,7 @@ public class ConsoleVariable<T> {
         return ConVarType.getEnumFromType(this.type);
     }
 
-    public T getArgumentValue(CommandContext context) {
+    public T getArgumentValue(CommandContext context) throws CommandSyntaxException {
         return context.getArgument("value", this.type);
     }
 

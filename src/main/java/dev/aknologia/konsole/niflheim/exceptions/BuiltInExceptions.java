@@ -32,12 +32,18 @@ public class BuiltInExceptions implements BuiltInExceptionProvider {
     private static final SimpleCommandExceptionType READER_EXPECTED_DOUBLE = new SimpleCommandExceptionType(new TranslatableText("konsole.error.expected_double"));
     private static final DynamicCommandExceptionType READER_INVALID_FLOAT = new DynamicCommandExceptionType(value -> new LiteralMessage(KonsoleUtils.getTranslated("konsole.error.invalid_float", value)));
     private static final SimpleCommandExceptionType READER_EXPECTED_FLOAT = new SimpleCommandExceptionType(new TranslatableText("konsole.error.expected_float"));
+    private static final DynamicCommandExceptionType READER_INVALID_KEY = new DynamicCommandExceptionType(value -> new LiteralMessage(KonsoleUtils.getTranslated("konsole.error.invalid_key", value)));
+    private static final SimpleCommandExceptionType READER_EXPECTED_KEY = new SimpleCommandExceptionType(new TranslatableText("konsole.error.expected_key"));
     private static final DynamicCommandExceptionType READER_EXPECTED_SYMBOL = new DynamicCommandExceptionType(symbol -> new LiteralMessage(KonsoleUtils.getTranslated("konsole.error.expected_symbol", symbol)));
 
     private static final SimpleCommandExceptionType DISPATCHER_UNKNOWN_COMMAND = new SimpleCommandExceptionType(new TranslatableText("konsole.error.unknown_command"));
     private static final SimpleCommandExceptionType DISPATCHER_UNKNOWN_ARGUMENT = new SimpleCommandExceptionType(new TranslatableText("konsole.error.unknown_argument"));
+    private static final Dynamic2CommandExceptionType DISPATCHER_MISSING_ARGUMENT = new Dynamic2CommandExceptionType((name, type) -> new LiteralMessage(KonsoleUtils.getTranslated("konsole.error.missing_argument", name, type)));
+    private static final Dynamic3CommandExceptionType DISPATCHER_INVALID_ARGUMENT = new Dynamic3CommandExceptionType((name, found, expected) -> new LiteralMessage(KonsoleUtils.getTranslated("konsole.error.invalid_argument", name, found, expected)));
     private static final SimpleCommandExceptionType DISPATCHER_EXPECTED_ARGUMENT_SEPARATOR = new SimpleCommandExceptionType(new TranslatableText("konsole.error.expected_separator"));
     private static final DynamicCommandExceptionType DISPATCHER_PARSE_EXCEPTION = new DynamicCommandExceptionType(message -> new LiteralMessage(KonsoleUtils.getTranslated("konsole.error.parse_exception", message)));
+
+    private static final SimpleCommandExceptionType UNKNOWN_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("konsole.error.unknown"));
 
     @Override
     public Dynamic2CommandExceptionType doubleTooLow() {
@@ -105,6 +111,11 @@ public class BuiltInExceptions implements BuiltInExceptionProvider {
     }
 
     @Override
+    public SimpleCommandExceptionType readerExpectedBool() {
+        return READER_EXPECTED_BOOL;
+    }
+
+    @Override
     public DynamicCommandExceptionType readerInvalidInt() {
         return READER_INVALID_INT;
     }
@@ -145,8 +156,13 @@ public class BuiltInExceptions implements BuiltInExceptionProvider {
     }
 
     @Override
-    public SimpleCommandExceptionType readerExpectedBool() {
-        return READER_EXPECTED_BOOL;
+    public DynamicCommandExceptionType readerInvalidKey() {
+        return READER_INVALID_KEY;
+    }
+
+    @Override
+    public SimpleCommandExceptionType readerExpectedKey() {
+        return READER_EXPECTED_KEY;
     }
 
     @Override
@@ -165,6 +181,16 @@ public class BuiltInExceptions implements BuiltInExceptionProvider {
     }
 
     @Override
+    public Dynamic2CommandExceptionType dispatcherMissingArgument() {
+        return DISPATCHER_MISSING_ARGUMENT;
+    }
+
+    @Override
+    public Dynamic3CommandExceptionType dispatcherInvalidArgument() {
+        return DISPATCHER_INVALID_ARGUMENT;
+    }
+
+    @Override
     public SimpleCommandExceptionType dispatcherExpectedArgumentSeparator() {
         return DISPATCHER_EXPECTED_ARGUMENT_SEPARATOR;
     }
@@ -172,5 +198,10 @@ public class BuiltInExceptions implements BuiltInExceptionProvider {
     @Override
     public DynamicCommandExceptionType dispatcherParseException() {
         return DISPATCHER_PARSE_EXCEPTION;
+    }
+
+    @Override
+    public SimpleCommandExceptionType unknownException() {
+        return UNKNOWN_EXCEPTION;
     }
 }

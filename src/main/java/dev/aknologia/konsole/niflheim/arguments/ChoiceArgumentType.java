@@ -22,7 +22,7 @@ public class ChoiceArgumentType implements ArgumentType<Choice> {
         return new ChoiceArgumentType(choices);
     }
 
-    public static Object getChoice(final CommandContext context, final String name, Class type) {
+    public static Object getChoice(final CommandContext context, final String name, Class type) throws CommandSyntaxException {
         return context.getArgument(name, type);
     }
 

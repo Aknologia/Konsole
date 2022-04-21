@@ -19,7 +19,7 @@ public class MultipleArgumentType implements ArgumentType<Object> {
         return new MultipleArgumentType(arguments);
     }
 
-    public static Object getMultiple(final CommandContext context, final String name) {
+    public static Object getMultiple(final CommandContext context, final String name) throws CommandSyntaxException {
         return context.getArgument(name, Object.class);
     }
 

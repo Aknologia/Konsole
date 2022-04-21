@@ -88,7 +88,7 @@ public class CommandManager {
             CommandContext context = (CommandContext) contextObj;
             try {
                 convar.set(convar.getArgumentValue(context));
-            } catch(IllegalArgumentException error) {
+            } catch(CommandSyntaxException ignored) {
                 KonsoleLogger.getInstance().info(convar.toString());
             }
 

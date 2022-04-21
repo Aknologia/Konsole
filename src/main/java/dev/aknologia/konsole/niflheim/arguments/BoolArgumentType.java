@@ -19,7 +19,7 @@ public class BoolArgumentType implements ArgumentType<Boolean> {
         return new BoolArgumentType();
     }
 
-    public static boolean getBool(final CommandContext context, final String name) {
+    public static boolean getBool(final CommandContext context, final String name) throws CommandSyntaxException {
         return context.getArgument(name, Boolean.class);
     }
 

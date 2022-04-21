@@ -23,6 +23,7 @@ public class DisconnectCommand extends AbstractCommand {
         MinecraftClient client = MinecraftClient.getInstance();
         boolean bl = client.isInSingleplayer();
         boolean bl2 = client.isConnectedToRealms();
+        assert client.world != null;
         client.world.disconnect();
         if (bl) {
             client.disconnect(new SaveLevelScreen(new TranslatableText("menu.savingLevel")));

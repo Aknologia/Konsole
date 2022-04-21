@@ -5,6 +5,7 @@ import dev.aknologia.konsole.niflheim.Command;
 import dev.aknologia.konsole.niflheim.CommandManager;
 import dev.aknologia.konsole.niflheim.ConsoleVariable;
 import dev.aknologia.konsole.niflheim.ParsedArgument;
+import dev.aknologia.konsole.niflheim.exceptions.CommandSyntaxException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -42,32 +43,28 @@ public class CommandContext {
         return command instanceof ConsoleVariable<?> ? CommandManager.fromConVar((ConsoleVariable<?>) this.command) : (Command) this.command;
     }
 
-    public <V> V getArgument(final String name, final Class<V> clazz) throws IllegalArgumentException {
+    public <V> V getArgument(final String name, final Class<V> clazz) throws CommandSyntaxException {
         final ParsedArgument<?> argument = arguments.get(name);
 
         if(argument == null) {
-            throw new IllegalArgumentException("No such argument '" + name + "' exists on this command");
+            throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.dispatcherMissingArgument().create(name, clazz.getSimpleName());
         }
 
         final Object result = argument.getResult();
         if(PRIMITIVE_TO_WRAPPER.getOrDefault(clazz, clazz).isAssignableFrom(result.getClass())) {
             return (V) result;
         } else {
-            throw new IllegalArgumentException("Argument '" + name + "' is defined as " + result.getClass() + ", not " + clazz);
+            throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.dispatcherInvalidArgument().create(name, result.getClass().getSimpleName(), clazz.getSimpleName());
         }
     }
 
     @Override
     public boolean equals(final Object o) {
         if(this == o) return true;
-        if(!(o instanceof CommandContext)) return false;
-
-        final CommandContext that = (CommandContext) o;
+        if(!(o instanceof final CommandContext that)) return false;
 
         if(!arguments.equals(that.arguments)) return false;
-        if(!command.equals(that.command)) return false;
-
-        return true;
+        return command.equals(that.command);
     }
 
     @Override

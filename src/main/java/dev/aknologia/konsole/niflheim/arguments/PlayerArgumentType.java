@@ -24,7 +24,7 @@ public class PlayerArgumentType implements ArgumentType<PlayerListEntry> {
 
     public static PlayerArgumentType player() { return new PlayerArgumentType(); }
 
-    public static PlayerListEntry getPlayer(final CommandContext context, final String name) {
+    public static PlayerListEntry getPlayer(final CommandContext context, final String name) throws CommandSyntaxException {
         return context.getArgument(name, PlayerListEntry.class);
     }
 

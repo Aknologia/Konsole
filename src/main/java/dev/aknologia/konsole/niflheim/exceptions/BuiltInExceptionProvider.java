@@ -27,6 +27,8 @@ public interface BuiltInExceptionProvider {
 
     DynamicCommandExceptionType readerInvalidBool();
 
+    SimpleCommandExceptionType readerExpectedBool();
+
     DynamicCommandExceptionType readerInvalidInt();
 
     SimpleCommandExceptionType readerExpectedInt();
@@ -43,7 +45,9 @@ public interface BuiltInExceptionProvider {
 
     SimpleCommandExceptionType readerExpectedFloat();
 
-    SimpleCommandExceptionType readerExpectedBool();
+    DynamicCommandExceptionType readerInvalidKey();
+
+    SimpleCommandExceptionType readerExpectedKey();
 
     DynamicCommandExceptionType readerExpectedSymbol();
 
@@ -51,7 +55,13 @@ public interface BuiltInExceptionProvider {
 
     SimpleCommandExceptionType dispatcherUnknownArgument();
 
+    Dynamic2CommandExceptionType dispatcherMissingArgument();
+
+    Dynamic3CommandExceptionType dispatcherInvalidArgument();
+
     SimpleCommandExceptionType dispatcherExpectedArgumentSeparator();
 
     DynamicCommandExceptionType dispatcherParseException();
+
+    SimpleCommandExceptionType unknownException();
 }

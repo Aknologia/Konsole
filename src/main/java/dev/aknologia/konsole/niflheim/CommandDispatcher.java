@@ -74,6 +74,10 @@ public class CommandDispatcher {
             }
         }
 
+        if(parse.getExceptions().size() > 0) {
+            throw parse.getExceptions().values().iterator().next();
+        }
+
         int result = 0;
         final String command = parse.getReader().getString();
         final CommandContext context = parse.getContext().build(command);
@@ -85,10 +89,9 @@ public class CommandDispatcher {
             } catch(final CommandSyntaxException ex) {
                 consumer.onCommandComplete(context, false, 0);
                 throw ex;
-            } catch(final IllegalArgumentException ex) {
-                KonsoleLogger.getInstance().error(new TranslatableText("konsole.error.missing_argument"));
-            } catch(Exception ex) {
+            } catch(final Exception ex) {
                 KonsoleClient.LOG.warn("Got error while running command: %s", ex);
+                throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.unknownException().create();
             }
         } else {
             consumer.onCommandComplete(context, false, 0);
@@ -123,6 +126,7 @@ public class CommandDispatcher {
         contextSoFar.withCommand(command);
 
         for (Argument arg : command.getArguments()) {
+            System.out.println("Parsing argument: " + arg.getName());
             try {
                 int start = originalReader.getCursor();
                 Object resultArg = arg.getArgumentType().parse(originalReader);
@@ -135,6 +139,7 @@ public class CommandDispatcher {
                 ParsedArgument<?> parsedArg = new ParsedArgument<>(start, end, resultArg);
                 contextSoFar.withArgument(arg.getName(), parsedArg);
             } catch (final CommandSyntaxException ex) {
+                if(!arg.isRequired()) break;
                 errors.put(originalReader.getCursor(), ex);
             }
         }

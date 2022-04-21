@@ -35,14 +35,12 @@ public class HelpCommand extends AbstractCommand {
         );
     }
 
-    private int commandsPerPage = 8;
-
     @Override
     public int run(CommandContext context) throws CommandSyntaxException {
         Object arg = null;
         try {
             arg = MultipleArgumentType.getMultiple(context, "command|page");
-        } catch(Exception ex) {}
+        } catch(Exception ignored) {}
         int page = 0;
         if(arg == null) return this.showPage(context, page);
         if(arg instanceof Integer) return this.showPage(context, (int) arg);
@@ -63,13 +61,14 @@ public class HelpCommand extends AbstractCommand {
 
     private int showPage(CommandContext context, int page) throws CommandSyntaxException {
         List<Command> commands = KonsoleClient.getCommandManager().getDispatcher().getCommands().values().stream().toList();
-        int maxPage = MathHelper.floor(commands.size()/commandsPerPage);
-        int start = page * commandsPerPage;
+        float commandsPerPage = 10f;
+        int maxPage = MathHelper.floor(commands.size()/ commandsPerPage);
+        int start = Math.round(page * commandsPerPage);
         if(start >= commands.size()) throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.integerTooHigh().create(page+1, maxPage+1);
-        int end = start + commandsPerPage;
+        int end = Math.round(start + commandsPerPage);
         if(end >= commands.size()) end = commands.size()-1;
-        List<Command> visibles = commands.subList(start, end);
-        ListIterator<Command> iterator = visibles.listIterator();
+        List<Command> visible = commands.subList(start, end);
+        ListIterator<Command> iterator = visible.listIterator();
 
         List<String> lines = new ArrayList<>();
         lines.add(String.format("\u00A7lHELP\u00A7r \u00A77> \u00A7o\u00A77Page %s/%s", page+1, maxPage+1));

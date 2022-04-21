@@ -1,6 +1,9 @@
 package dev.aknologia.konsole.niflheim;
 
+import dev.aknologia.konsole.input.KeyManager;
+import dev.aknologia.konsole.niflheim.arguments.types.Keys;
 import dev.aknologia.konsole.niflheim.exceptions.CommandSyntaxException;
+import org.lwjgl.glfw.GLFW;
 
 public class StringReader implements ImmutableStringReader {
     private static final char SYNTAX_ESCAPE = '\\';
@@ -254,6 +257,16 @@ public class StringReader implements ImmutableStringReader {
             cursor = start;
             throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerInvalidBool().createWithContext(this, value);
         }
+    }
+
+    public Keys.Key readKey() throws CommandSyntaxException {
+        String keyName = readString();
+        if(keyName.isEmpty()) { throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerExpectedKey().createWithContext(this); }
+
+        int keyCode = KeyManager.KEYS.getKeyCode(keyName);
+        if(keyCode == GLFW.GLFW_KEY_UNKNOWN) { throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerInvalidKey().createWithContext(this, keyName); }
+        String offName = KeyManager.KEYS.getKeyName(keyCode);
+        return new Keys.Key(offName, keyCode);
     }
 
     public void expect(final char c) throws CommandSyntaxException {

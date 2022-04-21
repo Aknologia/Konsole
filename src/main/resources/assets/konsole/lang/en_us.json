@@ -6,7 +6,8 @@
   "konsole.error.unknown": "Something went wrong.",
   "konsole.error.unknown_command": "Unknown command",
   "konsole.error.unknown_argument": "Unknown argument",
-  "konsole.error.missing_argument": "Missing required argument",
+  "konsole.error.missing_argument": "Missing required argument '%s' of type '%s'",
+  "konsole.error.invalid_argument": "Argument '%s' is defined as '%s', not '%s'",
   "konsole.error.expected_separator": "Expected whitespace to end one argument, but found trailing data",
   "konsole.error.parse_exception": "Could not parse command: %s",
 
@@ -34,5 +35,7 @@
   "konsole.error.expected_double": "Expected double",
   "konsole.error.invalid_float": "Invalid float '%s'",
   "konsole.error.expected_float": "Expected float",
+  "konsole.error.invalid_key": "Invalid key '%s'",
+  "konsole.error.expected_key": "Expected key",
   "konsole.error.expected_symbol": "Expected '%s'"
 }
