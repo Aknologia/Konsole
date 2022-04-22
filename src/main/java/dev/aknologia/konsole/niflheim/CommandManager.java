@@ -31,7 +31,7 @@ public class CommandManager {
 
     public void execute(String command) {
         try {
-            int n = this.dispatcher.execute(command);
+            this.dispatcher.execute(command);
         } catch(final CommandSyntaxException ex) {
             int i;
             KonsoleLogger.getInstance().error(Texts.toText(ex.getRawMessage()));
@@ -48,7 +48,6 @@ public class CommandManager {
                 stringbuilder.append("\u00a7r\u00a7c\u00a7o<--[").append(KonsoleUtils.getTranslated("konsole.misc.here").toUpperCase(Locale.ROOT)).append("]");
                 KonsoleLogger.getInstance().error(stringbuilder.toString());
             }
-            i = 0;
         } catch(final Exception ex) {
             LiteralText i = new LiteralText(ex.getMessage() == null ? ex.getClass().getName() : ex.getMessage());
             if(KonsoleClient.LOG.isDebugEnabled()) {
@@ -63,7 +62,6 @@ public class CommandManager {
                 KonsoleLogger.getInstance().error(Util.getInnermostMessage(ex));
                 KonsoleClient.LOG.error("[MANAGER] '%s' throw an exception: %s", command, ex.toString());
             }
-            int n = 0;
         }
     }
 
