@@ -227,19 +227,29 @@ public class StringReader implements ImmutableStringReader {
         throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerExpectedEndOfQuote().createWithContext(this);
     }
 
+    public String readRemaining() throws CommandSyntaxException {
+        if(canRead() && peek() == ' ') skip();
+        final String text = getRemaining();
+        setCursor(getTotalLength());
+
+        if(text.isEmpty() || text.isBlank()) throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerExpectedString().createWithContext(this);
+        return text;
+    }
+
     public String readString() throws CommandSyntaxException {
         if(canRead() && peek() == ' ') skip();
+        String result;
 
-        if (!canRead()) {
-            return "";
-        }
+        if (!canRead()) throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerExpectedString().createWithContext(this);
 
         final char next = peek();
         if (isQuotedStringStart(next)) {
             skip();
-            return readStringUntil(next);
+            result = readStringUntil(next);
         }
-        return readUnquotedString();
+        else result = readUnquotedString();
+        if(result.isEmpty()) throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerExpectedString().createWithContext(this);
+        return result;
     }
 
     public boolean readBoolean() throws CommandSyntaxException {

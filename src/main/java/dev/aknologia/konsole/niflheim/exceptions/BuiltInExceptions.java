@@ -34,6 +34,8 @@ public class BuiltInExceptions implements BuiltInExceptionProvider {
     private static final SimpleCommandExceptionType READER_EXPECTED_FLOAT = new SimpleCommandExceptionType(new TranslatableText("konsole.error.expected_float"));
     private static final DynamicCommandExceptionType READER_INVALID_KEY = new DynamicCommandExceptionType(value -> new LiteralMessage(KonsoleUtils.getTranslated("konsole.error.invalid_key", value)));
     private static final SimpleCommandExceptionType READER_EXPECTED_KEY = new SimpleCommandExceptionType(new TranslatableText("konsole.error.expected_key"));
+    private static final DynamicCommandExceptionType READER_INVALID_STRING = new DynamicCommandExceptionType(value -> new LiteralMessage(KonsoleUtils.getTranslated("konsole.error.invalid_string", value)));
+    private static final SimpleCommandExceptionType READER_EXPECTED_STRING = new SimpleCommandExceptionType(new TranslatableText("konsole.error.expected_string"));
     private static final DynamicCommandExceptionType READER_EXPECTED_SYMBOL = new DynamicCommandExceptionType(symbol -> new LiteralMessage(KonsoleUtils.getTranslated("konsole.error.expected_symbol", symbol)));
 
     private static final SimpleCommandExceptionType DISPATCHER_UNKNOWN_COMMAND = new SimpleCommandExceptionType(new TranslatableText("konsole.error.unknown_command"));
@@ -163,6 +165,16 @@ public class BuiltInExceptions implements BuiltInExceptionProvider {
     @Override
     public SimpleCommandExceptionType readerExpectedKey() {
         return READER_EXPECTED_KEY;
+    }
+
+    @Override
+    public DynamicCommandExceptionType readerInvalidString() {
+        return READER_INVALID_STRING;
+    }
+
+    @Override
+    public SimpleCommandExceptionType readerExpectedString() {
+        return READER_EXPECTED_STRING;
     }
 
     @Override

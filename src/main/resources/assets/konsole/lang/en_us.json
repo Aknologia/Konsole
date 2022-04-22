@@ -37,5 +37,7 @@
   "konsole.error.expected_float": "Expected float",
   "konsole.error.invalid_key": "Invalid key '%s'",
   "konsole.error.expected_key": "Expected key",
+  "konsole.error.invalid_string": "Invalid string '%s'",
+  "konsole.error.expected_string": "Expected string",
   "konsole.error.expected_symbol": "Expected '%s'"
 }

@@ -49,6 +49,10 @@ public interface BuiltInExceptionProvider {
 
     SimpleCommandExceptionType readerExpectedKey();
 
+    DynamicCommandExceptionType readerInvalidString();
+
+    SimpleCommandExceptionType readerExpectedString();
+
     DynamicCommandExceptionType readerExpectedSymbol();
 
     SimpleCommandExceptionType dispatcherUnknownCommand();
