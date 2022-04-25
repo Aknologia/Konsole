@@ -1,5 +1,6 @@
+<!-- HEADER -->
 <div>
-  <a href="#"><img width="230" height="230" align="left" src="https://raw.githubusercontent.com/Aknologia/Konsole/master/src/main/resources/assets/konsole/icon.png" alt="Konsole"/></a>
+  <a href="#"><img width="200" height="200" align="left" src="https://raw.githubusercontent.com/Aknologia/Konsole/master/src/main/resources/assets/konsole/icon.png" alt="Konsole"/></a>
   <br>
   <h1>Konsole 
     <a href="https://github.com/Aknologia/Konsole/actions/workflows/build.yml"><img
@@ -8,7 +9,6 @@
             src="https://img.shields.io/github/v/release/Aknologia/Konsole?include_prereleases" alt="Release"/></a>
   </h1>
   <p>Konsole is a Minecraft Clientside mod that adds a brand-new console to the game. It is mainly used for debugging and utility purposes.</p>
-  <h6>MIT © 2022 Aknologia</h6>
   <a href="https://www.minecraft.net/en-us/download"><img
           src="https://img.shields.io/badge/minecraft-1.18.2-yellowgreen"/></a>
   <a href="https://fabricmc.net/use/installer/"><img
@@ -38,4 +38,9 @@
       <a href="https://sonarcloud.io/summary/new_code?id=Aknologia_Konsole"><img
               src="https://sonarcloud.io/api/project_badges/measure?project=Aknologia_Konsole&metric=vulnerabilities" alt="Vulnerabilities"/></a>
   </p>
+</div>
+<hr>
+<!-- FOOTER -->
+<div>
+  <h6 align="right">MIT © 2022 Aknologia</h6>
 </div>
