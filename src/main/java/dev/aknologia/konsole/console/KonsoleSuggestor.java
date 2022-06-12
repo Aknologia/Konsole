@@ -14,6 +14,7 @@ import dev.aknologia.konsole.niflheim.exceptions.CommandSyntaxException;
 import dev.aknologia.konsole.niflheim.suggestion.Suggestion;
 import dev.aknologia.konsole.niflheim.suggestion.SuggestionContext;
 import dev.aknologia.konsole.niflheim.suggestion.Suggestions;
+import dev.aknologia.konsole.util.KonsoleUtils;
 import joptsimple.internal.Strings;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -41,6 +42,7 @@ public class KonsoleSuggestor {
     private static final Pattern BACKSLASH_S_PATTERN = Pattern.compile("(\\s+)");
     private static final Style ERROR_STYLE = Style.EMPTY.withColor(Formatting.RED);
     private static final Style INFO_STYLE = Style.EMPTY.withColor(Formatting.GRAY);
+    private static final Style UNFOCUSED_STYLE = Style.EMPTY.withColor(Formatting.DARK_GRAY);
     private static final List<Style> HIGHLIGHT_STYLES = Stream.of(Formatting.AQUA, Formatting.YELLOW, Formatting.GREEN, Formatting.LIGHT_PURPLE, Formatting.GOLD).map(Style.EMPTY::withColor).collect(ImmutableList.toImmutableList());
     final MinecraftClient client;
     final KonsoleScreen owner;
@@ -61,6 +63,8 @@ public class KonsoleSuggestor {
     SuggestionWindow window;
     private boolean windowActive;
     boolean completingSuggestions;
+
+    private int startIndex = 0;
 
     public KonsoleSuggestor(MinecraftClient minecraftClient, KonsoleScreen screen, TextFieldWidget textFieldWidget, TextRenderer textRenderer, int i, int j, boolean bl, int k) {
         this.client = minecraftClient;
@@ -105,14 +109,14 @@ public class KonsoleSuggestor {
             for(Suggestion suggestion : suggestions.getList()) {
                 i = Math.max(i, this.textRenderer.getWidth(suggestion.getText()));
             }
-            int j = MathHelper.clamp(this.textField.getCharacterX(suggestions.getRange().getStart()), 0, this.textField.getCharacterX(0) + this.textField.getInnerWidth() - i);
+            int j = MathHelper.clamp(this.textField.getCharacterX(suggestions.getRange().getStart()), 0, this.textField.getCharacterX(this.startIndex) + this.textField.getInnerWidth() - i);
             int suggestion = this.konsoleScreenSized ? this.owner.height() - 12 : 72;
             this.window = new SuggestionWindow(j, suggestion, i, this.sortSuggestions(suggestions));
         }
     }
 
     private List<Suggestion> sortSuggestions(Suggestions suggestions) {
-        String string = this.textField.getText().substring(0, this.textField.getCursor());
+        String string = this.textField.getText().substring(this.startIndex, this.textField.getCursor());
         int i = KonsoleSuggestor.getLastPlayerNameStart(string);
         String string2 = string.substring(i).toLowerCase(Locale.ROOT);
         ArrayList<Suggestion> list = Lists.newArrayList();
@@ -125,7 +129,12 @@ public class KonsoleSuggestor {
     }
 
     public void refresh() {
-        String string = this.textField.getText();
+        Integer[] indexes = KonsoleUtils.getUnquotedSymbolIndex(this.textField.getText(), CommandDispatcher.COMMAND_SEPARATOR);
+        if(indexes.length > 0) this.startIndex = indexes[indexes.length - 1]+1;
+        else this.startIndex = 0;
+        System.out.println("startIndex: " + this.startIndex);
+
+        String string = this.textField.getText().substring(this.startIndex);
         if(string.isEmpty() || string.isBlank())  {
             this.textField.setSuggestion(null);
             this.window = null;
@@ -141,8 +150,7 @@ public class KonsoleSuggestor {
         }
         this.messages.clear();
         StringReader stringReader = new StringReader(string);
-        int i = this.textField.getCursor();
-        int j;
+        int i = this.textField.getCursor() - this.startIndex;
         CommandDispatcher commandDispatcher = KonsoleClient.getCommandManager().getDispatcher();
         if(this.parse == null) {
             try {
@@ -151,9 +159,9 @@ public class KonsoleSuggestor {
 
             }
         }
-        int n = j = stringReader.getCursor();
+        int j = stringReader.getCursor();
         if(!(i < j || this.window != null && this.completingSuggestions)) {
-            this.suggestions = commandDispatcher.getCompletionSuggestions(this.parse, this.textField.getText(), i);
+            this.suggestions = commandDispatcher.getCompletionSuggestions(this.parse, string, i);
             if(!this.suggestions.isEmpty()) this.show();
         }
     }
@@ -216,23 +224,23 @@ public class KonsoleSuggestor {
     private void showUsages(Formatting formatting) {
         if(this.parse == null) return;
         CommandContextBuilder commandContextBuilder = this.parse.getContext();
-        SuggestionContext suggestionContext = commandContextBuilder.findSuggestionContext(this.textField.getText(), this.textField.getCursor());
+        SuggestionContext suggestionContext = commandContextBuilder.findSuggestionContext(this.textField.getText().substring(this.startIndex), this.textField.getCursor() - this.startIndex);
         int startPos = suggestionContext != null && suggestionContext.startPos > 0 ? suggestionContext.startPos : 0;
         String usage = KonsoleClient.getCommandManager().getDispatcher().getUsage(commandContextBuilder.getCommand());
         Style style = Style.EMPTY.withColor(formatting);
         if(usage != null && usage.trim().length() > 0) {
             this.messages.add(OrderedText.styledForwardsVisitedString(usage, style));
             int i = this.textRenderer.getWidth(usage);
-            this.x = MathHelper.clamp(this.textField.getCharacterX(startPos), 0, this.textField.getCharacterX(0) + this.textField.getInnerWidth() - i);
+            this.x = MathHelper.clamp(this.textField.getCharacterX(startPos + this.startIndex), 0, this.textField.getCharacterX(this.startIndex) + this.textField.getInnerWidth() - i);
             this.width = i;
         }
     }
 
     private OrderedText provideRenderText(String original, int firstCharacterIndex) {
         if(this.parse != null) {
-            return KonsoleSuggestor.highlight(this.parse, original, firstCharacterIndex);
+            return OrderedText.concat(OrderedText.styledForwardsVisitedString(original.substring(0, this.startIndex), UNFOCUSED_STYLE), KonsoleSuggestor.highlight(this.parse, original.substring(this.startIndex), firstCharacterIndex + this.startIndex));
         }
-        return OrderedText.styledForwardsVisitedString(original, Style.EMPTY);
+        return OrderedText.concat(OrderedText.styledForwardsVisitedString(original.substring(0, this.startIndex), UNFOCUSED_STYLE), OrderedText.styledForwardsVisitedString(original.substring(this.startIndex), Style.EMPTY));
     }
 
     @Nullable
@@ -285,7 +293,9 @@ public class KonsoleSuggestor {
         }
     }
 
-
+    public void setText(String text) {
+        this.textField.setText(this.textField.getText().substring(0, this.startIndex) + text);
+    }
 
 
     @Environment(EnvType.CLIENT)
@@ -431,8 +441,8 @@ public class KonsoleSuggestor {
             }
             Suggestion suggestion = this.suggestions.get(this.selection);
             KonsoleSuggestor.this.completingSuggestions = true;
-            KonsoleSuggestor.this.textField.setText(suggestion.apply(this.typedText));
-            int i = suggestion.getRange().getStart() + suggestion.getText().length();
+            KonsoleSuggestor.this.setText(suggestion.apply(this.typedText));
+            int i = suggestion.getRange().getStart() + KonsoleSuggestor.this.startIndex + suggestion.getText().length();
             KonsoleSuggestor.this.textField.setSelectionStart(i);
             KonsoleSuggestor.this.textField.setSelectionEnd(i);
             this.select(this.selection);

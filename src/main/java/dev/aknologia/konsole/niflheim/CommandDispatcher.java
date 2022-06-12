@@ -1,7 +1,6 @@
 package dev.aknologia.konsole.niflheim;
 
 import dev.aknologia.konsole.KonsoleClient;
-import dev.aknologia.konsole.KonsoleLogger;
 import dev.aknologia.konsole.niflheim.arguments.Argument;
 import dev.aknologia.konsole.niflheim.context.CommandContext;
 import dev.aknologia.konsole.niflheim.context.CommandContextBuilder;
@@ -10,11 +9,12 @@ import dev.aknologia.konsole.niflheim.exceptions.CommandSyntaxException;
 import dev.aknologia.konsole.niflheim.suggestion.Suggestion;
 import dev.aknologia.konsole.niflheim.suggestion.SuggestionContext;
 import dev.aknologia.konsole.niflheim.suggestion.Suggestions;
-import net.minecraft.text.TranslatableText;
 
 import java.util.*;
 
 public class CommandDispatcher {
+    public static final char COMMAND_SEPARATOR = ';';
+
     public static final String ARGUMENT_SEPARATOR = " ";
 
     public static final char ARGUMENT_SEPARATOR_CHAR = ' ';

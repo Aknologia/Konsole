@@ -29,38 +29,49 @@ public class CommandManager {
         }));
     }
 
-    public void execute(String command) {
-        try {
-            this.dispatcher.execute(command);
-        } catch(final CommandSyntaxException ex) {
-            int i;
-            KonsoleLogger.getInstance().error(Texts.toText(ex.getRawMessage()));
-            if(ex.getInput() != null && ex.getCursor() >= 0) {
-                i = Math.min(ex.getInput().length(), ex.getCursor());
-                StringBuilder stringbuilder = new StringBuilder("\u00a77");
-                if(i > 10) {
-                    stringbuilder.append("...");
+    public void execute(String input) {
+        List<String> parts = new ArrayList<>(); int i = 0;
+        for(Integer index : KonsoleUtils.getUnquotedSymbolIndex(input, CommandDispatcher.COMMAND_SEPARATOR)) {
+            parts.add(input.substring(i, index));
+            i = index + 1;
+        } parts.add(input.substring(i));
+        execute(parts.toArray(new String[0]));
+    }
+
+    public void execute(String[] commands) {
+        for(String command : commands) {
+            try {
+                this.dispatcher.execute(command);
+            } catch (final CommandSyntaxException ex) {
+                int i;
+                KonsoleLogger.getInstance().error(Texts.toText(ex.getRawMessage()));
+                if (ex.getInput() != null && ex.getCursor() >= 0) {
+                    i = Math.min(ex.getInput().length(), ex.getCursor());
+                    StringBuilder stringbuilder = new StringBuilder("\u00a77");
+                    if (i > 10) {
+                        stringbuilder.append("...");
+                    }
+                    stringbuilder.append(ex.getInput(), Math.max(0, i - 10), i);
+                    if (i < ex.getInput().length()) {
+                        stringbuilder.append(" \u00a7c\u00a7n").append(ex.getInput().substring(i + 1));
+                    }
+                    stringbuilder.append("\u00a7r\u00a7c\u00a7o<--[").append(KonsoleUtils.getTranslated("konsole.misc.here").toUpperCase(Locale.ROOT)).append("]");
+                    KonsoleLogger.getInstance().error(stringbuilder.toString());
                 }
-                stringbuilder.append(ex.getInput(), Math.max(0, i - 10), i);
-                if( i < ex.getInput().length()) {
-                    stringbuilder.append(" \u00a7c\u00a7n").append(ex.getInput().substring(i+1));
+            } catch (final Exception ex) {
+                LiteralText i = new LiteralText(ex.getMessage() == null ? ex.getClass().getName() : ex.getMessage());
+                if (KonsoleClient.LOG.isDebugEnabled()) {
+                    KonsoleClient.LOG.error("[MANAGER] Error while executing '%s': %s", command, ex.toString());
+                    StackTraceElement[] mutableText = ex.getStackTrace();
+                    for (int text = 0; text < Math.min(mutableText.length, 3); ++text) {
+                        i.append("\n\n").append(mutableText[text].getMethodName()).append("\n ").append(mutableText[text].getFileName()).append(":").append(String.valueOf(mutableText[text].getLineNumber()));
+                    }
                 }
-                stringbuilder.append("\u00a7r\u00a7c\u00a7o<--[").append(KonsoleUtils.getTranslated("konsole.misc.here").toUpperCase(Locale.ROOT)).append("]");
-                KonsoleLogger.getInstance().error(stringbuilder.toString());
-            }
-        } catch(final Exception ex) {
-            LiteralText i = new LiteralText(ex.getMessage() == null ? ex.getClass().getName() : ex.getMessage());
-            if(KonsoleClient.LOG.isDebugEnabled()) {
-                KonsoleClient.LOG.error("[MANAGER] Error while executing '%s': %s", command, ex.toString());
-                StackTraceElement[] mutableText = ex.getStackTrace();
-                for (int text = 0; text < Math.min(mutableText.length, 3); ++text) {
-                    i.append("\n\n").append(mutableText[text].getMethodName()).append("\n ").append(mutableText[text].getFileName()).append(":").append(String.valueOf(mutableText[text].getLineNumber()));
+                KonsoleLogger.getInstance().error(new TranslatableText("command.failed").styled(style -> style.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, i))));
+                if (SharedConstants.isDevelopment) {
+                    KonsoleLogger.getInstance().error(Util.getInnermostMessage(ex));
+                    KonsoleClient.LOG.error("[MANAGER] '%s' throw an exception: %s", command, ex.toString());
                 }
-            }
-            KonsoleLogger.getInstance().error(new TranslatableText("command.failed").styled(style -> style.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, i))));
-            if(SharedConstants.isDevelopment) {
-                KonsoleLogger.getInstance().error(Util.getInnermostMessage(ex));
-                KonsoleClient.LOG.error("[MANAGER] '%s' throw an exception: %s", command, ex.toString());
             }
         }
     }
